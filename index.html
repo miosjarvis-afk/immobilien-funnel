@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immobilien-Eignungscheck | Schweiz</title>
+    <meta name="description" content="Kostenloser Immobilien-Eignungscheck für Schweizer Angestellte & junge Investoren. In 2 Minuten zur ersten Einschätzung.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Reicht dein Einkommen für eine Kapitalanlage-Immobilie?</h1>
+                <p class="subline">Kostenloser Immobilien-Eignungscheck für Schweizer Angestellte & junge Investoren</p>
+                
+                <button class="cta-button" onclick="startQuiz()">Kostenlosen Check starten</button>
+                
+                <p class="micro-text">⏱ Dauer: ca. 2 Minuten · unverbindlich</p>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="dashboard-mockup">
+                    <div class="dashboard-item">
+                        <span class="label">Eignungslevel</span>
+                        <span class="value">Solide Ausgangslage</span>
+                    </div>
+                    <div class="dashboard-item">
+                        <span class="label">Einkommensbereich</span>
+                        <span class="value">Relevant</span>
+                    </div>
+                    <div class="dashboard-item">
+                        <span class="label">Eigenkapital</span>
+                        <span class="value">Einsetzbar</span>
+                    </div>
+                    <div class="dashboard-item">
+                        <span class="label">Nächster Schritt</span>
+                        <span class="value">Kurzcheck</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Check Section -->
+    <section class="why-check">
+        <div class="container">
+            <h2>Viele Interessierte stellen sich diese Fragen:</h2>
+            <ul class="question-list">
+                <li>Reicht mein Einkommen überhaupt?</li>
+                <li>Wie viel Eigenkapital brauche ich realistisch?</li>
+                <li>Passt Immobilieninvestment zu meiner aktuellen Lebensphase?</li>
+                <li>Würde eine Bank mich finanzieren?</li>
+            </ul>
+            <p class="conclusion">Dieser Check gibt dir eine erste Orientierung, ohne Verkaufsdruck und ohne Verpflichtung.</p>
+        </div>
+    </section>
+
+    <!-- Value Section -->
+    <section class="value">
+        <div class="container">
+            <h2>Was du aus dem Check mitnimmst</h2>
+            <ul class="value-list">
+                <li>✓ Einschätzung deiner Finanzierbarkeit</li>
+                <li>✓ Grobe Einordnung deines Eigenkapitals</li>
+                <li>✓ Passende Investment-Strategie für dein Profil</li>
+                <li>✓ Nächster sinnvoller Schritt – nur wenn du willst</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section class="trust">
+        <div class="container">
+            <div class="trust-badge">🔒</div>
+            <p class="trust-text">Dieser Immobilien-Check ist keine Bank, keine Finanzberatung und kein Verkaufsversprechen. Er dient ausschließlich dazu, deine Situation realistisch einzuordnen und unnötige Fehlentscheidungen zu vermeiden.</p>
+        </div>
+    </section>
+
+    <!-- CTA Section 2 -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Bereit für eine ehrliche Einschätzung?</h2>
+            <button class="cta-button" onclick="startQuiz()">Jetzt kostenlosen Immobilien-Check starten</button>
+            <p class="micro-text">Deine Angaben bleiben vertraulich.</p>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <div class="faq-item">
+                <h3>Ist das wirklich kostenlos?</h3>
+                <p>Ja. Der Check ist unverbindlich und kostenlos.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Muss ich danach etwas kaufen?</h3>
+                <p>Nein. Du entscheidest selbst, ob du einen nächsten Schritt willst.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Ist das eine Finanzberatung?</h3>
+                <p>Nein. Es ist eine Orientierungshilfe, keine Anlageberatung.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <a href="impressum.html">Impressum</a>
+            <a href="datenschutz.html">Datenschutz</a>
+            <a href="mailto:kontakt@example.ch">Kontakt</a>
+        </div>
+    </footer>
+
+    <!-- Sticky CTA (Mobile) -->
+    <div class="sticky-cta">
+        <button class="cta-button" onclick="startQuiz()">Kostenlosen Check starten</button>
+    </div>
+
+    <!-- Quiz Container (hidden initially) -->
+    <div id="quiz-container" class="quiz-container" style="display: none;">
+        <div class="quiz-content">
+            <div class="quiz-header">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p class="progress-text" id="progress-text">Schritt 1 von 6</p>
+            </div>
+            
+            <div id="quiz-questions"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
