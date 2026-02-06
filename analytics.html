@@ -331,6 +331,12 @@
             document.getElementById('auth').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             loadAnalytics();
+            startAutoRefresh();
+        } else {
+            // Invalid or no token - clear storage and show login
+            localStorage.removeItem('analytics_token');
+            document.getElementById('auth').style.display = 'flex';
+            document.getElementById('app').style.display = 'none';
         }
         
         function authenticate() {
@@ -340,6 +346,7 @@
                 document.getElementById('auth').style.display = 'none';
                 document.getElementById('app').style.display = 'block';
                 loadAnalytics();
+                startAutoRefresh();
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
             }
@@ -402,11 +409,10 @@
             }
         }
         
-        // Load on page load
-        loadAnalytics();
-        
-        // Auto-refresh every 30 seconds
-        setInterval(loadAnalytics, 30000);
+        // Auto-refresh every 30 seconds (only when authenticated)
+        function startAutoRefresh() {
+            setInterval(loadAnalytics, 30000);
+        }
     </script>
 </body>
 </html>
