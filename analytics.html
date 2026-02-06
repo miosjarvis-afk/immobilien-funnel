@@ -5,6 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Dashboard | Immobilien-Funnel</title>
     <style>
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            background: #0a1628;
+            color: white;
+        }
+        .auth-screen h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #c9a35b;
+        }
+        .auth-screen input {
+            background: #152a47;
+            border: 2px solid #1e3a5f;
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 8px;
+            width: 320px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        .auth-screen input:focus {
+            outline: none;
+            border-color: #c9a35b;
+        }
+        .auth-screen button {
+            background: #c9a35b;
+            color: #0a1628;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .auth-screen button:hover {
+            background: #e4d4b4;
+        }
+        .auth-screen .error {
+            color: #ef4444;
+            margin-top: 20px;
+            display: none;
+        }
+        .auth-screen .hint {
+            color: #8b9cb8;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -169,8 +223,20 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📊 Immobilien-Funnel Analytics</h1>
+    <div id="auth" class="auth-screen">
+        <h1>🔒 Analytics Dashboard</h1>
+        <p style="color: #8b9cb8; margin-bottom: 30px;">Zugriff nur für autorisierte Benutzer</p>
+        <input type="password" id="tokenInput" placeholder="Access Token" onkeypress="if(event.key==='Enter')authenticate()">
+        <button onclick="authenticate()">Login</button>
+        <div class="error" id="errorMsg">Falscher Token! Zugriff verweigert.</div>
+        <div class="hint">Token via URL: ?token=DEIN_TOKEN</div>
+    </div>
+    
+    <div id="app" class="container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <h1 style="margin: 0;">📊 Immobilien-Funnel Analytics</h1>
+            <button onclick="logout()" style="background: #6b7280; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Logout</button>
+        </div>
         
         <button class="refresh-btn" onclick="loadAnalytics()">🔄 Aktualisieren</button>
         
@@ -253,30 +319,35 @@
     </div>
     
     <script>
-        // ==================== PASSWORD PROTECTION ====================
-        const ANALYTICS_PASSWORD = 'jarvis2026'; // ÄNDERN: Setze dein eigenes Passwort
-        
-        function checkAuth() {
-            const isAuthenticated = sessionStorage.getItem('analytics_auth') === 'true';
-            
-            if (!isAuthenticated) {
-                const password = prompt('Analytics-Zugriff gesperrt.\nPasswort eingeben:');
-                
-                if (password === ANALYTICS_PASSWORD) {
-                    sessionStorage.setItem('analytics_auth', 'true');
-                    return true;
-                } else {
-                    alert('Falsches Passwort! Zugriff verweigert.');
-                    window.location.href = 'index.html';
-                    return false;
-                }
-            }
-            return true;
-        }
+        // ==================== TOKEN AUTH ====================
+        const VALID_TOKEN = 'immobilien_2026_samu'; // ÄNDERN: Setze deinen Token
         
         // Check auth on page load
-        if (!checkAuth()) {
-            throw new Error('Unauthorized');
+        const urlParams = new URLSearchParams(window.location.search);
+        let token = urlParams.get('token') || localStorage.getItem('analytics_token');
+        
+        if (token === VALID_TOKEN) {
+            localStorage.setItem('analytics_token', token);
+            document.getElementById('auth').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            loadAnalytics();
+        }
+        
+        function authenticate() {
+            const inputToken = document.getElementById('tokenInput').value;
+            if (inputToken === VALID_TOKEN) {
+                localStorage.setItem('analytics_token', inputToken);
+                document.getElementById('auth').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                loadAnalytics();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('analytics_token');
+            location.reload();
         }
         
         // ==================== ANALYTICS ====================
