@@ -253,6 +253,33 @@
     </div>
     
     <script>
+        // ==================== PASSWORD PROTECTION ====================
+        const ANALYTICS_PASSWORD = 'jarvis2026'; // ÄNDERN: Setze dein eigenes Passwort
+        
+        function checkAuth() {
+            const isAuthenticated = sessionStorage.getItem('analytics_auth') === 'true';
+            
+            if (!isAuthenticated) {
+                const password = prompt('Analytics-Zugriff gesperrt.\nPasswort eingeben:');
+                
+                if (password === ANALYTICS_PASSWORD) {
+                    sessionStorage.setItem('analytics_auth', 'true');
+                    return true;
+                } else {
+                    alert('Falsches Passwort! Zugriff verweigert.');
+                    window.location.href = 'index.html';
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // Check auth on page load
+        if (!checkAuth()) {
+            throw new Error('Unauthorized');
+        }
+        
+        // ==================== ANALYTICS ====================
         // Load from localStorage (for now - später von Backend/DB)
         function loadAnalytics() {
             const analytics = JSON.parse(localStorage.getItem('funnel_analytics') || '{"views":0,"quizStarts":0,"quizComplete":0,"leads":[],"leadsList":[]}');
