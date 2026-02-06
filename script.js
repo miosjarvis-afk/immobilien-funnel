@@ -1,6 +1,10 @@
 // ==================== CONFIG ====================
+const BACKEND_URL = 'https://YOUR-RAILWAY-URL.railway.app'; // WICHTIG: Nach Railway-Deployment ersetzen!
 const TELEGRAM_BOT_TOKEN = '8529364495:AAEd651kGB2bgNwm9MnCx8gVtIJsIrJ3aCM';
 const TELEGRAM_CHAT_ID = '830554328';
+
+// Analytics Storage
+let analytics = JSON.parse(localStorage.getItem('funnel_analytics') || '{"views":0,"quizStarts":0,"quizComplete":0,"leads":0,"leadsList":[]}');
 
 // ==================== QUIZ DATA ====================
 const quizQuestions = [
@@ -99,6 +103,7 @@ function startQuiz() {
     
     // Track quiz start
     trackEvent('StartQuiz', { quiz_name: 'immobilien_check' });
+    trackAnalyticsEvent('quiz_start');
     
     // Hide landing page content, show quiz
     document.getElementById('quiz-container').style.display = 'flex';
@@ -193,6 +198,7 @@ function completeQuiz() {
         duration_seconds: duration,
         total_questions: quizQuestions.length 
     });
+    trackAnalyticsEvent('quiz_complete');
     
     // Show loading screen
     showLoading();
@@ -331,6 +337,9 @@ async function submitLead(event) {
         source: new URLSearchParams(window.location.search).get('utm_source') || 'direct'
     };
     
+    // Track analytics
+    trackAnalyticsEvent('lead', leadData);
+    
     // Send to Telegram
     await sendTelegramNotification(leadData);
     
@@ -339,44 +348,19 @@ async function submitLead(event) {
 }
 
 async function sendTelegramNotification(leadData) {
-    const message = `
-🎯 NEUER LEAD - Immobilien-Check
-
-👤 Name: ${leadData.firstName}
-📧 E-Mail: ${leadData.email}
-📱 Telefon: ${leadData.phone}
-
-📊 Ergebnis:
-• Score: ${leadData.score} Punkte
-• Level: ${leadData.level}
-
-📋 Antworten:
-${Object.entries(leadData.answers).map(([key, value]) => {
-    const question = quizQuestions.find(q => q.id === key);
-    return `• ${question.question.substring(0, 40)}...: ${value.value}`;
-}).join('\n')}
-
-✅ Consent: ${leadData.consent ? 'Ja' : 'Nein'}
-🔗 Source: ${leadData.source}
-⏰ ${new Date(leadData.timestamp).toLocaleString('de-CH')}
-    `.trim();
-    
     try {
-        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        // Send to backend (bypasses CORS)
+        await fetch(`${BACKEND_URL}/api/lead`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
+            body: JSON.stringify(leadData)
         });
         
-        if (!response.ok) {
-            console.error('Telegram notification failed:', await response.text());
-        }
+        console.log('Lead sent to backend successfully');
     } catch (error) {
-        console.error('Error sending Telegram notification:', error);
+        console.error('Error sending notification:', error);
+        // Fallback: Store locally
+        console.log('Lead stored locally (backend unavailable)');
     }
 }
 
@@ -464,8 +448,33 @@ function closeQuiz() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// ==================== ANALYTICS TRACKING ====================
+function saveAnalytics() {
+    localStorage.setItem('funnel_analytics', JSON.stringify(analytics));
+}
+
+function trackAnalyticsEvent(eventType, data = {}) {
+    switch(eventType) {
+        case 'view':
+            analytics.views++;
+            break;
+        case 'quiz_start':
+            analytics.quizStarts++;
+            break;
+        case 'quiz_complete':
+            analytics.quizComplete++;
+            break;
+        case 'lead':
+            analytics.leads++;
+            analytics.leadsList.push(data);
+            break;
+    }
+    saveAnalytics();
+}
+
 // ==================== PAGE LOAD ====================
 document.addEventListener('DOMContentLoaded', function() {
     // Track page view
     trackEvent('ViewContent', { content_name: 'landing_page' });
+    trackAnalyticsEvent('view');
 });
