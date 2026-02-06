@@ -5,15 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Dashboard | Immobilien-Funnel</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0a1628;
-            color: white;
-        }
-        
-        /* Auth Screen */
         .auth-screen {
             display: flex;
             flex-direction: column;
@@ -21,34 +12,75 @@
             justify-content: center;
             min-height: 100vh;
             text-align: center;
+            background: #0a1628;
+            color: white;
         }
-        .auth-screen h1 { font-size: 2.5em; margin-bottom: 20px; color: #c9a35b; }
+        .auth-screen h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #c9a35b;
+        }
         .auth-screen input {
-            background: #152a47; border: 2px solid #1e3a5f; color: #fff;
-            padding: 16px 24px; border-radius: 8px; width: 320px; margin-bottom: 20px; font-size: 16px;
+            background: #152a47;
+            border: 2px solid #1e3a5f;
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 8px;
+            width: 320px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        .auth-screen input:focus {
+            outline: none;
+            border-color: #c9a35b;
         }
         .auth-screen button {
-            background: #c9a35b; color: #0a1628; border: none;
-            padding: 16px 40px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;
+            background: #c9a35b;
+            color: #0a1628;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
         }
-        .auth-screen .error { color: #ef4444; margin-top: 20px; display: none; }
-        
-        /* Dashboard */
-        #dashboard { display: none; padding: 40px 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .header h1 { font-size: 32px; color: #c9a35b; margin: 0; }
-        
-        .logout-btn {
-            background: #6b7280; color: white; border: none;
-            padding: 10px 20px; border-radius: 4px; cursor: pointer;
+        .auth-screen button:hover {
+            background: #e4d4b4;
+        }
+        .auth-screen .error {
+            color: #ef4444;
+            margin-top: 20px;
+            display: none;
+        }
+        .auth-screen .hint {
+            color: #8b9cb8;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .refresh-btn {
-            background: #c9a35b; color: #0a1628; border: none;
-            padding: 12px 24px; border-radius: 4px; font-size: 16px;
-            font-weight: 600; cursor: pointer; margin-bottom: 20px;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a1628;
+            color: white;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 40px;
+            color: #c9a35b;
         }
         
         .stats-grid {
@@ -108,6 +140,7 @@
             background: #0a1628;
             border-radius: 4px;
             overflow: hidden;
+            position: relative;
         }
         
         .funnel-bar {
@@ -166,6 +199,22 @@
         .score-medium { background: #f59e0b; color: white; }
         .score-low { background: #6b7280; color: white; }
         
+        .refresh-btn {
+            background: #c9a35b;
+            color: #0a1628;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .refresh-btn:hover {
+            background: #e4d4b4;
+        }
+        
         .no-data {
             text-align: center;
             padding: 40px;
@@ -179,120 +228,127 @@
         <p style="color: #8b9cb8; margin-bottom: 30px;">Zugriff nur für autorisierte Benutzer</p>
         <input type="password" id="tokenInput" placeholder="Access Token" onkeypress="if(event.key==='Enter')authenticate()">
         <button onclick="authenticate()">Login</button>
-        <div class="error" id="error">❌ Falscher Token</div>
+        <div class="error" id="errorMsg">Falscher Token! Zugriff verweigert.</div>
+        <div class="hint">Token via URL: ?token=DEIN_TOKEN</div>
     </div>
     
-    <div id="dashboard">
-        <div class="container">
-            <div class="header">
-                <h1>📊 Immobilien-Funnel Analytics</h1>
-                <button class="logout-btn" onclick="logout()">Logout</button>
+    <div id="app" class="container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <h1 style="margin: 0;">📊 Immobilien-Funnel Analytics</h1>
+            <button onclick="logout()" style="background: #6b7280; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Logout</button>
+        </div>
+        
+        <button class="refresh-btn" onclick="loadAnalytics()">🔄 Aktualisieren</button>
+        
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Landingpage Views</div>
+                <div class="stat-value" id="stat-views">-</div>
+                <div class="stat-subtitle">Gesamt</div>
             </div>
-            
-            <button class="refresh-btn" onclick="loadAnalytics()">🔄 Aktualisieren</button>
-            
-            <!-- Key Metrics -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Landingpage Views</div>
-                    <div class="stat-value" id="stat-views">-</div>
-                    <div class="stat-subtitle">Gesamt</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Quiz Starts</div>
-                    <div class="stat-value" id="stat-quiz-starts">-</div>
-                    <div class="stat-subtitle"><span id="conv-quiz">-</span>% Conversion</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Quiz Completion</div>
-                    <div class="stat-value" id="stat-quiz-complete">-</div>
-                    <div class="stat-subtitle"><span id="conv-complete">-</span>% von Starts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Leads</div>
-                    <div class="stat-value" id="stat-leads">-</div>
-                    <div class="stat-subtitle"><span id="conv-lead">-</span>% von Complete</div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-label">Quiz Starts</div>
+                <div class="stat-value" id="stat-quiz-starts">-</div>
+                <div class="stat-subtitle"><span id="conv-quiz">-</span>% Conversion</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-label">Quiz Completion</div>
+                <div class="stat-value" id="stat-quiz-complete">-</div>
+                <div class="stat-subtitle"><span id="conv-complete">-</span>% von Starts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Leads</div>
+                <div class="stat-value" id="stat-leads">-</div>
+                <div class="stat-subtitle"><span id="conv-lead">-</span>% von Complete</div>
+            </div>
+        </div>
+        
+        <!-- Funnel Visualization -->
+        <div class="funnel-visual">
+            <h2 style="margin-bottom: 24px; font-size: 20px;">Conversion Funnel</h2>
             
-            <!-- Funnel Visualization -->
-            <div class="funnel-visual">
-                <h2 style="margin-bottom: 24px; font-size: 20px;">Conversion Funnel</h2>
-                
-                <div class="funnel-step">
-                    <div class="funnel-label">
-                        <span>Landingpage View</span>
-                        <span id="funnel-views">-</span>
-                    </div>
-                    <div class="funnel-bar-container">
-                        <div class="funnel-bar" id="bar-views" style="width: 100%">100%</div>
-                    </div>
+            <div class="funnel-step">
+                <div class="funnel-label">
+                    <span>Landingpage View</span>
+                    <span id="funnel-views">-</span>
                 </div>
-                
-                <div class="funnel-step">
-                    <div class="funnel-label">
-                        <span>Quiz Start</span>
-                        <span id="funnel-quiz-starts">-</span>
-                    </div>
-                    <div class="funnel-bar-container">
-                        <div class="funnel-bar" id="bar-quiz-starts" style="width: 0%">0%</div>
-                    </div>
-                </div>
-                
-                <div class="funnel-step">
-                    <div class="funnel-label">
-                        <span>Quiz Complete</span>
-                        <span id="funnel-quiz-complete">-</span>
-                    </div>
-                    <div class="funnel-bar-container">
-                        <div class="funnel-bar" id="bar-quiz-complete" style="width: 0%">0%</div>
-                    </div>
-                </div>
-                
-                <div class="funnel-step">
-                    <div class="funnel-label">
-                        <span>Lead Submit</span>
-                        <span id="funnel-leads">-</span>
-                    </div>
-                    <div class="funnel-bar-container">
-                        <div class="funnel-bar" id="bar-leads" style="width: 0%">0%</div>
-                    </div>
+                <div class="funnel-bar-container">
+                    <div class="funnel-bar" id="bar-views" style="width: 100%">100%</div>
                 </div>
             </div>
             
-            <!-- Leads Table -->
-            <div class="leads-table">
-                <div class="table-header">Letzte Leads</div>
-                <div class="table-body" id="leads-table">
-                    <div class="no-data">Noch keine Leads vorhanden</div>
+            <div class="funnel-step">
+                <div class="funnel-label">
+                    <span>Quiz Start</span>
+                    <span id="funnel-quiz-starts">-</span>
                 </div>
+                <div class="funnel-bar-container">
+                    <div class="funnel-bar" id="bar-quiz-starts" style="width: 0%">0%</div>
+                </div>
+            </div>
+            
+            <div class="funnel-step">
+                <div class="funnel-label">
+                    <span>Quiz Complete</span>
+                    <span id="funnel-quiz-complete">-</span>
+                </div>
+                <div class="funnel-bar-container">
+                    <div class="funnel-bar" id="bar-quiz-complete" style="width: 0%">0%</div>
+                </div>
+            </div>
+            
+            <div class="funnel-step">
+                <div class="funnel-label">
+                    <span>Lead Submit</span>
+                    <span id="funnel-leads">-</span>
+                </div>
+                <div class="funnel-bar-container">
+                    <div class="funnel-bar" id="bar-leads" style="width: 0%">0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Leads Table -->
+        <div class="leads-table">
+            <div class="table-header">Letzte Leads</div>
+            <div class="table-body" id="leads-table">
+                <div class="no-data">Noch keine Leads vorhanden</div>
             </div>
         </div>
     </div>
     
     <script>
-        // ==================== AUTH (wie Mission Control) ====================
-        const TOKEN = 'immobilien_2026_samu';
+        // ==================== TOKEN AUTH ====================
+        const VALID_TOKEN = 'immobilien_2026_samu'; // ÄNDERN: Setze deinen Token
         
-        function checkAuth() {
-            const urlParams = new URLSearchParams(window.location.search);
-            let token = urlParams.get('token') || localStorage.getItem('analytics_token');
-            if (token === TOKEN) {
-                localStorage.setItem('analytics_token', token);
-                if (urlParams.has('token')) window.history.replaceState({}, '', window.location.pathname);
-                document.getElementById('auth').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadAnalytics();
-                setInterval(loadAnalytics, 30000);
-            }
+        // Check auth on page load
+        const urlParams = new URLSearchParams(window.location.search);
+        let token = urlParams.get('token') || localStorage.getItem('analytics_token');
+        
+        if (token === VALID_TOKEN) {
+            localStorage.setItem('analytics_token', token);
+            document.getElementById('auth').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            loadAnalytics();
+            startAutoRefresh();
+        } else {
+            // Invalid or no token - clear storage and show login
+            localStorage.removeItem('analytics_token');
+            document.getElementById('auth').style.display = 'flex';
+            document.getElementById('app').style.display = 'none';
         }
         
         function authenticate() {
-            if (document.getElementById('tokenInput').value === TOKEN) {
-                localStorage.setItem('analytics_token', TOKEN);
-                location.reload();
+            const inputToken = document.getElementById('tokenInput').value;
+            if (inputToken === VALID_TOKEN) {
+                localStorage.setItem('analytics_token', inputToken);
+                document.getElementById('auth').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                loadAnalytics();
+                startAutoRefresh();
             } else {
-                document.getElementById('error').style.display = 'block';
+                document.getElementById('errorMsg').style.display = 'block';
             }
         }
         
@@ -302,8 +358,9 @@
         }
         
         // ==================== ANALYTICS ====================
+        // Load from localStorage (for now - später von Backend/DB)
         function loadAnalytics() {
-            const analytics = JSON.parse(localStorage.getItem('funnel_analytics') || '{"views":0,"quizStarts":0,"quizComplete":0,"leads":0,"leadsList":[]}');
+            const analytics = JSON.parse(localStorage.getItem('funnel_analytics') || '{"views":0,"quizStarts":0,"quizComplete":0,"leads":[],"leadsList":[]}');
             
             // Update stats
             document.getElementById('stat-views').textContent = analytics.views || 0;
@@ -352,8 +409,10 @@
             }
         }
         
-        // Check auth on page load
-        checkAuth();
+        // Auto-refresh every 30 seconds (only when authenticated)
+        function startAutoRefresh() {
+            setInterval(loadAnalytics, 30000);
+        }
     </script>
 </body>
 </html>
