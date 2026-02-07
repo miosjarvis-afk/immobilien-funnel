@@ -1,9 +1,8 @@
 // ==================== CONFIG ====================
-const BACKEND_URL = 'https://YOUR-RAILWAY-URL.railway.app'; // WICHTIG: Nach Railway-Deployment ersetzen!
-const TELEGRAM_BOT_TOKEN = '8529364495:AAEd651kGB2bgNwm9MnCx8gVtIJsIrJ3aCM';
+const TELEGRAM_BOT_TOKEN = '8097168362:AAG4aeWZF_iL_jg0D0chIt49HuQc20QrINc';
 const TELEGRAM_CHAT_ID = '830554328';
 
-// Analytics Storage
+// Analytics Storage (lokal für Fallback)
 let analytics = JSON.parse(localStorage.getItem('funnel_analytics') || '{"views":0,"quizStarts":0,"quizComplete":0,"leads":0,"leadsList":[]}');
 
 // ==================== QUIZ DATA ====================
@@ -334,33 +333,65 @@ async function submitLead(event) {
         level: level.label,
         answers,
         timestamp: new Date().toISOString(),
-        source: new URLSearchParams(window.location.search).get('utm_source') || 'direct'
+        source: new URLSearchParams(window.location.search).get('utm_source') || 'direct',
+        userAgent: navigator.userAgent
     };
     
-    // Track analytics
+    // Track analytics locally (fallback)
     trackAnalyticsEvent('lead', leadData);
     
     // Send to Telegram
-    await sendTelegramNotification(leadData);
+    await sendToTelegram(leadData);
     
     // Show full result
     showFullResult(leadData);
 }
 
-async function sendTelegramNotification(leadData) {
+async function sendToTelegram(leadData) {
+    // Format message with special marker for easy parsing
+    const message = `🎯 <b>NEUER LEAD - Immobilien-Check</b>
+
+👤 <b>Name:</b> ${leadData.firstName}
+📧 <b>E-Mail:</b> ${leadData.email}
+📱 <b>Telefon:</b> ${leadData.phone}
+
+📊 <b>Ergebnis:</b>
+• Score: ${leadData.score} Punkte
+• Level: ${leadData.level}
+
+📋 <b>Antworten:</b>
+• Ziel: ${leadData.answers?.q1_goal?.value || '-'}
+• Timing: ${leadData.answers?.q2_timing?.value || '-'}
+• Einkommen: ${leadData.answers?.q3_income?.value || '-'}
+• Eigenkapital: ${leadData.answers?.q4_equity?.value || '-'}
+• Anstellung: ${leadData.answers?.q5_employment?.value || '-'}
+• Lebenssituation: ${leadData.answers?.q6_lifesituation?.value || '-'}
+
+✅ <b>Consent:</b> ${leadData.consent ? 'Ja' : 'Nein'}
+🔗 <b>Source:</b> ${leadData.source || 'direct'}
+⏰ ${new Date(leadData.timestamp).toLocaleString('de-CH')}`;
+
     try {
-        // Send to backend (bypasses CORS)
-        await fetch(`${BACKEND_URL}/api/lead`, {
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(leadData)
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'HTML'
+            })
         });
         
-        console.log('Lead sent to backend successfully');
+        const result = await response.json();
+        
+        if (result.ok) {
+            console.log('Lead sent to Telegram successfully');
+        } else {
+            console.error('Telegram API error:', result);
+        }
+        
     } catch (error) {
-        console.error('Error sending notification:', error);
-        // Fallback: Store locally
-        console.log('Lead stored locally (backend unavailable)');
+        console.error('Error sending to Telegram:', error);
     }
 }
 
