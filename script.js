@@ -2,15 +2,23 @@
 const TELEGRAM_BOT_TOKEN = '8097168362:AAG4aeWZF_iL_jg0D0chIt49HuQc20QrINc';
 const TELEGRAM_CHAT_ID = '830554328';
 
-// Analytics Storage (lokal für Fallback)
-let analytics = JSON.parse(localStorage.getItem('funnel_analytics') || '{"views":0,"quizStarts":0,"quizComplete":0,"leads":0,"leadsList":[]}');
+// Analytics Storage mit detailliertem Tracking
+let analytics = JSON.parse(localStorage.getItem('funnel_analytics') || JSON.stringify({
+    pageViews: 0,
+    quizStarts: 0,
+    quizSteps: [0, 0, 0, 0, 0, 0], // Completions per step
+    quizComplete: 0,
+    formShown: 0,
+    leads: 0,
+    leadsList: [],
+    lastUpdated: new Date().toISOString()
+}));
 
 // ==================== QUIZ DATA ====================
 const quizQuestions = [
     {
         id: 'q1_goal',
         question: 'Was ist dein Ziel mit Immobilien?',
-        context: '',
         options: [
             { text: 'Langfristig passiv Vermögen aufbauen', value: 'wealth', score: 3 },
             { text: 'Zusätzliche Einnahmen neben dem Job', value: 'income', score: 3 },
@@ -21,7 +29,6 @@ const quizQuestions = [
     {
         id: 'q2_timing',
         question: 'Wann möchtest du prüfen, ob eine erste Kapitalanlage für dich passt?',
-        context: '',
         options: [
             { text: 'In den nächsten 6 Monaten', value: '0-6m', score: 3 },
             { text: '6–12 Monate', value: '6-12m', score: 2 },
@@ -32,7 +39,6 @@ const quizQuestions = [
     {
         id: 'q3_income',
         question: 'In welchem Bereich liegt dein monatliches Nettoeinkommen?',
-        context: '',
         options: [
             { text: 'Unter 4\'500 CHF', value: '<4500', score: 0 },
             { text: '4\'500–6\'000 CHF', value: '4500-6000', score: 2 },
@@ -43,7 +49,6 @@ const quizQuestions = [
     {
         id: 'q4_equity',
         question: 'Wie viel Eigenkapital könntest du einsetzen, ohne deine Sicherheit zu gefährden?',
-        context: '',
         options: [
             { text: 'Unter 20\'000 CHF', value: '<20k', score: 1 },
             { text: '20\'000–40\'000 CHF', value: '20-40k', score: 2 },
@@ -54,7 +59,6 @@ const quizQuestions = [
     {
         id: 'q5_employment',
         question: 'Wie ist deine aktuelle berufliche Situation?',
-        context: '',
         options: [
             { text: 'Festangestellt (unbefristet)', value: 'permanent', score: 4 },
             { text: 'Festangestellt (befristet)', value: 'temporary', score: 2 },
@@ -65,7 +69,6 @@ const quizQuestions = [
     {
         id: 'q6_lifesituation',
         question: 'Wie sieht deine aktuelle Lebenssituation aus?',
-        context: '',
         options: [
             { text: 'Alleinstehend', value: 'single', score: 1 },
             { text: 'Partnerschaft (keine Kinder)', value: 'couple', score: 1 },
@@ -81,17 +84,48 @@ let quizStartTime = null;
 
 // ==================== TRACKING ====================
 function trackEvent(eventName, params = {}) {
-    // Google Analytics 4
     if (typeof gtag !== 'undefined') {
         gtag('event', eventName, params);
     }
-    
-    // Meta Pixel
     if (typeof fbq !== 'undefined') {
         fbq('track', eventName, params);
     }
-    
     console.log('Event tracked:', eventName, params);
+}
+
+function saveAnalytics() {
+    analytics.lastUpdated = new Date().toISOString();
+    localStorage.setItem('funnel_analytics', JSON.stringify(analytics));
+}
+
+function trackAnalyticsEvent(eventType, data = {}) {
+    switch(eventType) {
+        case 'page_view':
+            analytics.pageViews++;
+            break;
+        case 'quiz_start':
+            analytics.quizStarts++;
+            break;
+        case 'quiz_step':
+            if (data.step >= 0 && data.step < 6) {
+                analytics.quizSteps[data.step]++;
+            }
+            break;
+        case 'quiz_complete':
+            analytics.quizComplete++;
+            break;
+        case 'form_shown':
+            analytics.formShown++;
+            break;
+        case 'lead':
+            analytics.leads++;
+            analytics.leadsList.push({
+                ...data,
+                timestamp: new Date().toISOString()
+            });
+            break;
+    }
+    saveAnalytics();
 }
 
 // ==================== QUIZ FUNCTIONS ====================
@@ -99,33 +133,26 @@ function startQuiz() {
     quizStartTime = Date.now();
     currentQuestion = 0;
     answers = {};
-    
-    // Track quiz start
     trackEvent('StartQuiz', { quiz_name: 'immobilien_check' });
     trackAnalyticsEvent('quiz_start');
-    
-    // Hide landing page content, show quiz
     document.getElementById('quiz-container').style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    
-    // Render first question
     renderQuestion();
 }
 
 function renderQuestion() {
     const question = quizQuestions[currentQuestion];
     const container = document.getElementById('quiz-questions');
-    
-    // Update progress
     const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
     document.getElementById('progress-fill').style.width = progress + '%';
     document.getElementById('progress-text').textContent = `Schritt ${currentQuestion + 1} von ${quizQuestions.length}`;
     
-    // Render question
+    // Track step completion
+    trackAnalyticsEvent('quiz_step', { step: currentQuestion });
+    
     container.innerHTML = `
         <div class="quiz-question">
             <h3>${question.question}</h3>
-            ${question.context ? `<p class="context">${question.context}</p>` : ''}
             <div class="quiz-options">
                 ${question.options.map((option, index) => `
                     <div class="quiz-option" onclick="selectOption('${question.id}', '${option.value}', ${option.score}, ${index})">
@@ -143,7 +170,6 @@ function renderQuestion() {
         </div>
     `;
     
-    // Restore selection if going back
     if (answers[question.id]) {
         const selectedIndex = question.options.findIndex(opt => opt.value === answers[question.id].value);
         if (selectedIndex >= 0) {
@@ -152,23 +178,13 @@ function renderQuestion() {
             document.getElementById('btn-next').disabled = false;
         }
     }
-    
-    // Track question view
-    trackEvent('QuizQuestion', { 
-        question_number: currentQuestion + 1,
-        question_id: question.id 
-    });
+    trackEvent('QuizQuestion', { question_number: currentQuestion + 1, question_id: question.id });
 }
 
 function selectOption(questionId, value, score, index) {
-    // Save answer
     answers[questionId] = { value, score };
-    
-    // Update UI
     document.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
     document.querySelectorAll('.quiz-option')[index].classList.add('selected');
-    
-    // Enable next button
     document.getElementById('btn-next').disabled = false;
 }
 
@@ -184,39 +200,21 @@ function nextQuestion() {
         currentQuestion++;
         renderQuestion();
     } else {
-        // Quiz complete
         completeQuiz();
     }
 }
 
 function completeQuiz() {
     const duration = Math.round((Date.now() - quizStartTime) / 1000);
-    
-    // Track completion
-    trackEvent('QuizComplete', { 
-        duration_seconds: duration,
-        total_questions: quizQuestions.length 
-    });
+    trackEvent('QuizComplete', { duration_seconds: duration, total_questions: quizQuestions.length });
     trackAnalyticsEvent('quiz_complete');
-    
-    // Show loading screen
     showLoading();
-    
-    // Calculate score
     const score = calculateScore();
-    
-    // After 2 seconds, show mini result + lead form
-    setTimeout(() => {
-        showMiniResult(score);
-    }, 2000);
+    setTimeout(() => showMiniResult(score), 2000);
 }
 
 function calculateScore() {
-    let total = 0;
-    Object.values(answers).forEach(answer => {
-        total += answer.score;
-    });
-    return total;
+    return Object.values(answers).reduce((sum, answer) => sum + answer.score, 0);
 }
 
 function showLoading() {
@@ -237,21 +235,17 @@ function showLoading() {
 
 function showMiniResult(score) {
     const level = getEignungslevel(score);
-    
     document.getElementById('quiz-questions').innerHTML = `
         <div class="quiz-question">
             <h3 style="text-align: center; color: var(--accent);">Deine Ausgangslage ist grundsätzlich ${level.label.toLowerCase()}.</h3>
-            
             <ul style="list-style: none; margin: 32px 0; padding: 0;">
                 <li style="padding: 12px 0; font-size: 16px;">✓ Einkommen liegt im relevanten Bereich</li>
                 <li style="padding: 12px 0; font-size: 16px;">✓ Eigenkapital ist grundsätzlich einsetzbar</li>
                 <li style="padding: 12px 0; font-size: 16px;">✓ Ziel passt zu langfristigem Vermögensaufbau</li>
             </ul>
-            
             <p style="color: var(--secondary-grey); margin: 24px 0; line-height: 1.8;">
                 Für eine fundierte Einschätzung sind 1–2 Punkte kurz persönlich zu klären – das lässt sich nicht sinnvoll automatisieren.
             </p>
-            
             <button class="cta-button" onclick="showLeadForm()" style="width: 100%; margin-top: 24px;">
                 Persönliches Ergebnis erhalten
             </button>
@@ -260,25 +254,22 @@ function showMiniResult(score) {
 }
 
 function showLeadForm() {
+    trackAnalyticsEvent('form_shown');
     document.getElementById('quiz-questions').innerHTML = `
         <div class="quiz-question">
             <h3 style="text-align: center;">Dein persönliches Ergebnis + kurze Einordnung</h3>
-            
             <p style="color: var(--secondary-grey); margin: 24px 0; text-align: center; line-height: 1.8;">
                 Wir senden dir dein vollständiges Ergebnis per E-Mail und klären es auf Wunsch kurz telefonisch (5–10 Min), damit du eine realistische Einschätzung bekommst.
             </p>
-            
             <form id="lead-form" onsubmit="submitLead(event)" style="max-width: 500px; margin: 0 auto;">
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">Vorname *</label>
                     <input type="text" id="firstName" required style="width: 100%; padding: 12px; border: 2px solid var(--light-grey); border-radius: 8px; font-size: 16px;">
                 </div>
-                
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">E-Mail *</label>
                     <input type="email" id="email" required style="width: 100%; padding: 12px; border: 2px solid var(--light-grey); border-radius: 8px; font-size: 16px;">
                 </div>
-                
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">Telefonnummer *</label>
                     <input type="tel" id="phone" required style="width: 100%; padding: 12px; border: 2px solid var(--light-grey); border-radius: 8px; font-size: 16px;">
@@ -286,7 +277,6 @@ function showLeadForm() {
                         Deine Nummer wird nur für diese Einordnung verwendet – nicht für Werbung und nicht ohne dein Einverständnis weitergegeben.
                     </p>
                 </div>
-                
                 <div style="margin-bottom: 24px;">
                     <label style="display: flex; align-items: start; cursor: pointer;">
                         <input type="checkbox" id="consent" required style="margin-right: 12px; margin-top: 4px;">
@@ -295,7 +285,6 @@ function showLeadForm() {
                         </span>
                     </label>
                 </div>
-                
                 <button type="submit" class="cta-button" style="width: 100%;">
                     Ergebnis freischalten
                 </button>
@@ -306,60 +295,39 @@ function showLeadForm() {
 
 async function submitLead(event) {
     event.preventDefault();
-    
     const firstName = document.getElementById('firstName').value;
     const email = document.getElementById('email').value;
     const phone = document.getElementById('phone').value;
     const consent = document.getElementById('consent').checked;
-    
     const score = calculateScore();
     const level = getEignungslevel(score);
     
-    // Track lead conversion
-    trackEvent('Lead', {
-        value: 1,
-        currency: 'CHF',
-        score: score,
-        level: level.label
-    });
+    trackEvent('Lead', { value: 1, currency: 'CHF', score: score, level: level.label });
     
-    // Prepare lead data
     const leadData = {
-        firstName,
-        email,
-        phone,
-        consent,
-        score,
-        level: level.label,
-        answers,
-        timestamp: new Date().toISOString(),
+        firstName, email, phone, consent, score,
+        level: level.label, answers,
         source: new URLSearchParams(window.location.search).get('utm_source') || 'direct',
         userAgent: navigator.userAgent
     };
     
-    // Track analytics locally (fallback)
     trackAnalyticsEvent('lead', leadData);
-    
-    // Send to Telegram
     await sendToTelegram(leadData);
-    
-    // Show full result
     showFullResult(leadData);
 }
 
 async function sendToTelegram(leadData) {
-    // Format message with special marker for easy parsing
-    const message = `🎯 <b>NEUER LEAD - Immobilien-Check</b>
+    const message = `🎯 NEUER LEAD - Immobilien-Check
 
-👤 <b>Name:</b> ${leadData.firstName}
-📧 <b>E-Mail:</b> ${leadData.email}
-📱 <b>Telefon:</b> ${leadData.phone}
+👤 Name: ${leadData.firstName}
+📧 E-Mail: ${leadData.email}
+📱 Telefon: ${leadData.phone}
 
-📊 <b>Ergebnis:</b>
+📊 Ergebnis:
 • Score: ${leadData.score} Punkte
 • Level: ${leadData.level}
 
-📋 <b>Antworten:</b>
+📋 Antworten:
 • Ziel: ${leadData.answers?.q1_goal?.value || '-'}
 • Timing: ${leadData.answers?.q2_timing?.value || '-'}
 • Einkommen: ${leadData.answers?.q3_income?.value || '-'}
@@ -367,9 +335,8 @@ async function sendToTelegram(leadData) {
 • Anstellung: ${leadData.answers?.q5_employment?.value || '-'}
 • Lebenssituation: ${leadData.answers?.q6_lifesituation?.value || '-'}
 
-✅ <b>Consent:</b> ${leadData.consent ? 'Ja' : 'Nein'}
-🔗 <b>Source:</b> ${leadData.source || 'direct'}
-⏰ ${new Date(leadData.timestamp).toLocaleString('de-CH')}`;
+✅ Consent: ${leadData.consent ? 'Ja' : 'Nein'}
+🔗 Source: ${leadData.source || 'direct'}`;
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -377,21 +344,18 @@ async function sendToTelegram(leadData) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
+                text: message
             })
         });
         
         const result = await response.json();
-        
         if (result.ok) {
-            console.log('Lead sent to Telegram successfully');
+            console.log('✅ Lead sent to Telegram');
         } else {
-            console.error('Telegram API error:', result);
+            console.error('❌ Telegram error:', result);
         }
-        
     } catch (error) {
-        console.error('Error sending to Telegram:', error);
+        console.error('❌ Error:', error);
     }
 }
 
@@ -400,41 +364,30 @@ function getEignungslevel(score) {
         return {
             label: 'Solide Ausgangslage',
             description: 'Deine finanzielle Situation bietet eine solide Basis für ein Immobilieninvestment. Die wichtigsten Voraussetzungen sind erfüllt.',
-            income: 'im relevanten Bereich',
-            equity: 'einsetzbar',
-            stability: 'stabil',
-            timing: 'kurzfristig prüfbar'
+            income: 'im relevanten Bereich', equity: 'einsetzbar', stability: 'stabil', timing: 'kurzfristig prüfbar'
         };
     } else if (score >= 8) {
         return {
             label: 'Prüfbar mit Klärung',
             description: 'Deine Ausgangslage ist interessant. Einige Punkte sollten wir kurz klären, um eine fundierte Einschätzung zu geben.',
-            income: 'grundsätzlich relevant',
-            equity: 'vorhanden',
-            stability: 'gemischt',
-            timing: 'mittelfristig'
+            income: 'grundsätzlich relevant', equity: 'vorhanden', stability: 'gemischt', timing: 'mittelfristig'
         };
     } else {
         return {
             label: 'Aktuell eher nicht – aber planbar',
             description: 'Im Moment ist die Basis noch ausbaufähig. Das ist völlig normal – lass uns schauen, welche Schritte dich weiterbringen.',
-            income: 'ausbaufähig',
-            equity: 'im Aufbau',
-            stability: 'noch im Aufbau',
-            timing: 'langfristig'
+            income: 'ausbaufähig', equity: 'im Aufbau', stability: 'noch im Aufbau', timing: 'langfristig'
         };
     }
 }
 
 function showFullResult(leadData) {
     const level = getEignungslevel(leadData.score);
-    
     document.getElementById('quiz-questions').innerHTML = `
         <div class="quiz-question">
             <h3 style="text-align: center; color: var(--accent); margin-bottom: 32px;">
                 Dein Ergebnis: ${level.label}
             </h3>
-            
             <div style="background: var(--light-grey); padding: 24px; border-radius: 8px; margin-bottom: 24px;">
                 <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Deine Kurz-Einordnung</h4>
                 <ul style="list-style: none; padding: 0;">
@@ -444,14 +397,10 @@ function showFullResult(leadData) {
                     <li style="padding: 8px 0;">📅 Timing: ${level.timing}</li>
                 </ul>
             </div>
-            
             <div style="margin-bottom: 32px;">
                 <h4 style="color: var(--primary-blue); margin-bottom: 12px;">Was das praktisch bedeutet</h4>
-                <p style="color: var(--secondary-grey); line-height: 1.8;">
-                    ${level.description}
-                </p>
+                <p style="color: var(--secondary-grey); line-height: 1.8;">${level.description}</p>
             </div>
-            
             <div style="text-align: center; padding: 32px 0; background: var(--light-grey); border-radius: 8px;">
                 <h4 style="color: var(--primary-blue); margin-bottom: 16px;">
                     Möchtest du deine Situation kurz einordnen lassen?
@@ -459,11 +408,8 @@ function showFullResult(leadData) {
                 <p style="color: var(--secondary-grey); margin-bottom: 24px;">
                     Wir melden uns innerhalb von 24 Stunden bei dir.
                 </p>
-                <button class="cta-button" onclick="closeQuiz()">
-                    Verstanden
-                </button>
+                <button class="cta-button" onclick="closeQuiz()">Verstanden</button>
             </div>
-            
             <p style="text-align: center; font-size: 14px; color: var(--text-light); margin-top: 24px;">
                 Dein Ergebnis wurde an ${leadData.email} gesendet.
             </p>
@@ -474,38 +420,11 @@ function showFullResult(leadData) {
 function closeQuiz() {
     document.getElementById('quiz-container').style.display = 'none';
     document.body.style.overflow = 'auto';
-    
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ==================== ANALYTICS TRACKING ====================
-function saveAnalytics() {
-    localStorage.setItem('funnel_analytics', JSON.stringify(analytics));
-}
-
-function trackAnalyticsEvent(eventType, data = {}) {
-    switch(eventType) {
-        case 'view':
-            analytics.views++;
-            break;
-        case 'quiz_start':
-            analytics.quizStarts++;
-            break;
-        case 'quiz_complete':
-            analytics.quizComplete++;
-            break;
-        case 'lead':
-            analytics.leads++;
-            analytics.leadsList.push(data);
-            break;
-    }
-    saveAnalytics();
 }
 
 // ==================== PAGE LOAD ====================
 document.addEventListener('DOMContentLoaded', function() {
-    // Track page view
     trackEvent('ViewContent', { content_name: 'landing_page' });
-    trackAnalyticsEvent('view');
+    trackAnalyticsEvent('page_view');
 });

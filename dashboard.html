@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Immobilien-Funnel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .stat-label { color: #8892b0; font-size: 0.9rem; margin-bottom: 8px; text-transform: uppercase; }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .funnel-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 20px 0;
+        }
+        .funnel-step {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            margin: 12px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+        .funnel-step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 16px;
+        }
+        .funnel-step-info { flex: 1; }
+        .funnel-step-label { font-size: 1.1rem; margin-bottom: 4px; }
+        .funnel-step-count { color: #8892b0; font-size: 0.9rem; }
+        .funnel-step-bar {
+            flex: 0 0 200px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: 16px;
+        }
+        .funnel-step-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+        .leads-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .leads-table th {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            color: #8892b0;
+            font-size: 0.85rem;
+        }
+        .leads-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8892b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Immobilien-Funnel Dashboard</h1>
+        <p style="text-align: center; color: #8892b0; margin-bottom: 40px;">
+            Echtzeit-Analytics aus LocalStorage
+        </p>
+        
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Seitenaufrufe</div>
+                <div class="stat-value" id="stat-views">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Quiz Starts</div>
+                <div class="stat-value" id="stat-starts">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Quiz Complete</div>
+                <div class="stat-value" id="stat-complete">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Leads</div>
+                <div class="stat-value" id="stat-leads">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Conversion Rate</div>
+                <div class="stat-value" id="stat-conversion">0%</div>
+            </div>
+        </div>
+        
+        <div class="funnel-section">
+            <h2 style="margin-bottom: 24px;">Conversion Funnel</h2>
+            <div id="funnel-steps"></div>
+        </div>
+        
+        <div class="funnel-section">
+            <h2 style="margin-bottom: 24px;">Leads (Letzte 10)</h2>
+            <div id="leads-container"></div>
+        </div>
+    </div>
+    
+    <script>
+        function loadDashboard() {
+            const analytics = JSON.parse(localStorage.getItem('funnel_analytics') || JSON.stringify({
+                pageViews: 0,
+                quizStarts: 0,
+                quizSteps: [0, 0, 0, 0, 0, 0],
+                quizComplete: 0,
+                formShown: 0,
+                leads: 0,
+                leadsList: []
+            }));
+            
+            // Stats
+            document.getElementById('stat-views').textContent = analytics.pageViews;
+            document.getElementById('stat-starts').textContent = analytics.quizStarts;
+            document.getElementById('stat-complete').textContent = analytics.quizComplete;
+            document.getElementById('stat-leads').textContent = analytics.leads;
+            
+            const conversionRate = analytics.pageViews > 0 
+                ? ((analytics.leads / analytics.pageViews) * 100).toFixed(1)
+                : 0;
+            document.getElementById('stat-conversion').textContent = conversionRate + '%';
+            
+            // Funnel
+            const funnelSteps = [
+                { label: 'Seitenaufrufe', count: analytics.pageViews },
+                { label: 'Quiz gestartet', count: analytics.quizStarts },
+                { label: 'Frage 1', count: analytics.quizSteps[0] || 0 },
+                { label: 'Frage 2', count: analytics.quizSteps[1] || 0 },
+                { label: 'Frage 3', count: analytics.quizSteps[2] || 0 },
+                { label: 'Frage 4', count: analytics.quizSteps[3] || 0 },
+                { label: 'Frage 5', count: analytics.quizSteps[4] || 0 },
+                { label: 'Frage 6', count: analytics.quizSteps[5] || 0 },
+                { label: 'Quiz abgeschlossen', count: analytics.quizComplete },
+                { label: 'Formular gezeigt', count: analytics.formShown },
+                { label: 'Leads', count: analytics.leads }
+            ];
+            
+            const maxCount = Math.max(...funnelSteps.map(s => s.count), 1);
+            const funnelHTML = funnelSteps.map((step, index) => {
+                const percentage = (step.count / maxCount) * 100;
+                return `
+                    <div class="funnel-step">
+                        <div class="funnel-step-number">${index + 1}</div>
+                        <div class="funnel-step-info">
+                            <div class="funnel-step-label">${step.label}</div>
+                            <div class="funnel-step-count">${step.count} Besucher</div>
+                        </div>
+                        <div class="funnel-step-bar">
+                            <div class="funnel-step-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('funnel-steps').innerHTML = funnelHTML;
+            
+            // Leads
+            const leads = analytics.leadsList.slice(-10).reverse();
+            if (leads.length > 0) {
+                const leadsHTML = `
+                    <table class="leads-table">
+                        <thead>
+                            <tr>
+                                <th>Zeitpunkt</th>
+                                <th>Name</th>
+                                <th>E-Mail</th>
+                                <th>Telefon</th>
+                                <th>Score</th>
+                                <th>Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${leads.map(lead => `
+                                <tr>
+                                    <td>${new Date(lead.timestamp).toLocaleString('de-CH')}</td>
+                                    <td>${lead.firstName}</td>
+                                    <td>${lead.email}</td>
+                                    <td>${lead.phone}</td>
+                                    <td>${lead.score}</td>
+                                    <td>${lead.level}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                document.getElementById('leads-container').innerHTML = leadsHTML;
+            } else {
+                document.getElementById('leads-container').innerHTML = '<div class="empty-state">📭 Noch keine Leads</div>';
+            }
+        }
+        
+        loadDashboard();
+        setInterval(loadDashboard, 5000); // Refresh alle 5 Sekunden
+    </script>
+</body>
+</html>
