@@ -23,9 +23,9 @@ const quizQuestions = [
         question: 'Wann möchtest du prüfen, ob eine erste Kapitalanlage für dich passt?',
         context: '',
         options: [
+            { text: 'So schnell wie möglich', value: 'asap', score: 3 },
             { text: 'In den nächsten 6 Monaten', value: '0-6m', score: 3 },
             { text: '6–12 Monate', value: '6-12m', score: 2 },
-            { text: '1–3 Jahre', value: '1-3y', score: 1 },
             { text: 'Noch offen', value: 'open', score: 0 }
         ]
     },
@@ -180,10 +180,11 @@ function calculateScore() {
 function showLoading() {
     document.getElementById('quiz-questions').innerHTML = `
         <div style="text-align: center; padding: 60px 20px;">
-            <div style="width: 60px; height: 60px; border: 4px solid var(--light-grey); border-top-color: var(--accent); border-radius: 50%; margin: 0 auto 24px; animation: spin 1s linear infinite;"></div>
-            <h3 style="color: var(--primary-blue); margin-bottom: 12px;">Wir werten deine Angaben aus...</h3>
-            <div style="background: var(--light-grey); height: 8px; border-radius: 4px; overflow: hidden; max-width: 300px; margin: 0 auto;">
-                <div style="background: var(--accent); height: 100%; width: 0%; animation: progress 2s ease-out forwards;"></div>
+            <div style="width: 60px; height: 60px; border: 4px solid #e9ecef; border-top-color: #c9a35b; border-radius: 50%; margin: 0 auto 24px; animation: spin 1s linear infinite;"></div>
+            <h3 style="color: #0a1628; margin-bottom: 12px;">Wir werten deine Angaben aus...</h3>
+            <p style="color: #495057; font-size: 15px; margin-bottom: 32px;">Analysiere Einkommen, Eigenkapital und Lebenssituation...</p>
+            <div style="background: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden; max-width: 300px; margin: 0 auto;">
+                <div style="background: linear-gradient(90deg, #152a47 0%, #c9a35b 100%); height: 100%; width: 0%; animation: progress 2s ease-out forwards;"></div>
             </div>
         </div>
         <style>
@@ -197,13 +198,13 @@ function showMiniResult(score) {
     const level = getEignungslevel(score);
     document.getElementById('quiz-questions').innerHTML = `
         <div class="quiz-question">
-            <h3 style="text-align: center; color: var(--accent);">Deine Ausgangslage ist grundsätzlich ${level.label.toLowerCase()}.</h3>
+            <h3 style="text-align: center; color: #c9a35b;">Deine Ausgangslage ist grundsätzlich ${level.label.toLowerCase()}.</h3>
             <ul style="list-style: none; margin: 32px 0; padding: 0;">
                 <li style="padding: 12px 0; font-size: 16px;">✓ Einkommen liegt im relevanten Bereich</li>
                 <li style="padding: 12px 0; font-size: 16px;">✓ Eigenkapital ist grundsätzlich einsetzbar</li>
                 <li style="padding: 12px 0; font-size: 16px;">✓ Ziel passt zu langfristigem Vermögensaufbau</li>
             </ul>
-            <p style="color: var(--secondary-grey); margin: 24px 0; line-height: 1.8;">
+            <p style="color: #495057; margin: 24px 0; line-height: 1.8;">
                 Für eine fundierte Einschätzung sind 1–2 Punkte kurz persönlich zu klären – das lässt sich nicht sinnvoll automatisieren.
             </p>
             <button class="cta-button" onclick="showLeadForm()" style="width: 100%; margin-top: 24px;">
@@ -217,29 +218,29 @@ function showLeadForm() {
     document.getElementById('quiz-questions').innerHTML = `
         <div class="quiz-question">
             <h3 style="text-align: center;">Dein persönliches Ergebnis + kurze Einordnung</h3>
-            <p style="color: var(--secondary-grey); margin: 24px 0; text-align: center; line-height: 1.8;">
+            <p style="color: #495057; margin: 24px 0; text-align: center; line-height: 1.8;">
                 Wir senden dir dein vollständiges Ergebnis per E-Mail und klären es auf Wunsch kurz telefonisch (5–10 Min), damit du eine realistische Einschätzung bekommst.
             </p>
             <form id="lead-form" onsubmit="submitLead(event)" style="max-width: 500px; margin: 0 auto;">
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">Vorname *</label>
-                    <input type="text" id="firstName" required style="width: 100%; padding: 12px; border: 2px solid var(--light-grey); border-radius: 8px; font-size: 16px;">
+                    <input type="text" id="firstName" required style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px;">
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">E-Mail *</label>
-                    <input type="email" id="email" required style="width: 100%; padding: 12px; border: 2px solid var(--light-grey); border-radius: 8px; font-size: 16px;">
+                    <input type="email" id="email" required style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px;">
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">Telefonnummer *</label>
-                    <input type="tel" id="phone" required style="width: 100%; padding: 12px; border: 2px solid var(--light-grey); border-radius: 8px; font-size: 16px;">
-                    <p style="font-size: 13px; color: var(--text-light); margin-top: 8px;">
+                    <input type="tel" id="phone" required style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px;">
+                    <p style="font-size: 13px; color: #495057; margin-top: 8px;">
                         Deine Nummer wird nur für diese Einordnung verwendet – nicht für Werbung und nicht ohne dein Einverständnis weitergegeben.
                     </p>
                 </div>
                 <div style="margin-bottom: 24px;">
                     <label style="display: flex; align-items: start; cursor: pointer;">
                         <input type="checkbox" id="consent" required style="margin-right: 12px; margin-top: 4px;">
-                        <span style="font-size: 14px; color: var(--secondary-grey);">
+                        <span style="font-size: 14px; color: #495057;">
                             Ich bin einverstanden, telefonisch zur Ergebnis-Einordnung kontaktiert zu werden.
                         </span>
                     </label>
