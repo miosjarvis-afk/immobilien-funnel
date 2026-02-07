@@ -173,7 +173,7 @@ h2 {
 }
 
 .value-image {
-    max-width: 400px;
+    max-width: 550px;
     height: auto;
     margin: 0 auto 32px;
     display: block;
@@ -255,6 +255,11 @@ h2 {
     justify-content: center;
     font-size: 32px;
     box-shadow: 0 8px 24px rgba(21, 42, 71, 0.15);
+    color: white;
+}
+
+.trust-badge:first-child .trust-icon {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
 }
 
 .trust-badge p {
@@ -287,6 +292,21 @@ h2 {
 
 .cta-section .micro-text {
     color: rgba(255, 255, 255, 0.8);
+}
+
+/* ==================== FINAL CTA ==================== */
+.final-cta {
+    background: var(--white);
+    text-align: center;
+    padding: 80px 0;
+}
+
+.final-cta h2 {
+    margin-bottom: 32px;
+}
+
+.final-cta .cta-button {
+    margin: 0 auto;
 }
 
 /* ==================== FAQ ==================== */
@@ -541,7 +561,7 @@ label {
     }
     
     .value-image {
-        max-width: 300px;
+        max-width: 450px;
     }
     
     h2 {
@@ -587,7 +607,7 @@ label {
     }
     
     .value-image {
-        max-width: 250px;
+        max-width: 320px;
     }
     
     .cta-button {
@@ -595,4 +615,4 @@ label {
         font-size: 16px;
     }
 }
-/* Force refresh */
+/* Force refresh v2 */
