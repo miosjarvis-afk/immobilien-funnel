@@ -30,9 +30,9 @@ const quizQuestions = [
         id: 'q2_timing',
         question: 'Wann möchtest du prüfen, ob eine erste Kapitalanlage für dich passt?',
         options: [
+            { text: 'So schnell wie möglich', value: 'asap', score: 4 },
             { text: 'In den nächsten 6 Monaten', value: '0-6m', score: 3 },
             { text: '6–12 Monate', value: '6-12m', score: 2 },
-            { text: '1–3 Jahre', value: '1-3y', score: 1 },
             { text: 'Noch offen', value: 'open', score: 0 }
         ]
     },
@@ -220,10 +220,10 @@ function calculateScore() {
 function showLoading() {
     document.getElementById('quiz-questions').innerHTML = `
         <div style="text-align: center; padding: 60px 20px;">
-            <div style="width: 60px; height: 60px; border: 4px solid var(--light-grey); border-top-color: var(--accent); border-radius: 50%; margin: 0 auto 24px; animation: spin 1s linear infinite;"></div>
-            <h3 style="color: var(--primary-blue); margin-bottom: 12px;">Wir werten deine Angaben aus...</h3>
-            <div style="background: var(--light-grey); height: 8px; border-radius: 4px; overflow: hidden; max-width: 300px; margin: 0 auto;">
-                <div style="background: var(--accent); height: 100%; width: 0%; animation: progress 2s ease-out forwards;"></div>
+            <div style="width: 60px; height: 60px; border: 4px solid #E5E7EB; border-top-color: #D4AF37; border-radius: 50%; margin: 0 auto 24px; animation: spin 1s linear infinite;"></div>
+            <h3 style="color: #0A1628; margin-bottom: 12px; font-size: 20px; font-weight: 600;">Wir werten deine Angaben aus...</h3>
+            <div style="background: #E5E7EB; height: 8px; border-radius: 4px; overflow: hidden; max-width: 300px; margin: 0 auto;">
+                <div style="background: #D4AF37; height: 100%; width: 0%; animation: progress 2s ease-out forwards;"></div>
             </div>
         </div>
         <style>
@@ -237,7 +237,7 @@ function showMiniResult(score) {
     const level = getEignungslevel(score);
     document.getElementById('quiz-questions').innerHTML = `
         <div class="quiz-question">
-            <h3 style="text-align: center; color: var(--accent);">Deine Ausgangslage ist grundsätzlich ${level.label.toLowerCase()}.</h3>
+            <h3 style="text-align: center; color: var(--accent);">${level.label}</h3>
             <ul style="list-style: none; margin: 32px 0; padding: 0;">
                 <li style="padding: 12px 0; font-size: 16px;">✓ Einkommen liegt im relevanten Bereich</li>
                 <li style="padding: 12px 0; font-size: 16px;">✓ Eigenkapital ist grundsätzlich einsetzbar</li>
