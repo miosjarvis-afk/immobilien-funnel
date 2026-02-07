@@ -206,6 +206,18 @@ h2 {
     transform: translateY(-2px);
 }
 
+.value-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.value-card h3 {
+    color: white;
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
 .value-card p {
     font-size: 17px;
     color: white;
@@ -221,10 +233,22 @@ h2 {
     padding: 60px 0;
 }
 
+.trust-badges {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
 .trust-badge {
+    text-align: center;
+}
+
+.trust-icon {
     width: 72px;
     height: 72px;
-    margin: 0 auto 24px;
+    margin: 0 auto 16px;
     background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 100%);
     border-radius: 50%;
     display: flex;
@@ -234,12 +258,11 @@ h2 {
     box-shadow: 0 8px 24px rgba(21, 42, 71, 0.15);
 }
 
-.trust-text {
-    max-width: 800px;
-    margin: 0 auto;
-    font-size: 17px;
-    color: var(--grey-700);
-    line-height: 1.8;
+.trust-badge p {
+    font-size: 16px;
+    color: var(--navy-900);
+    font-weight: 600;
+    margin: 0;
 }
 
 /* ==================== CTA SECTION ==================== */
@@ -536,7 +559,8 @@ label {
     
     .questions-grid,
     .value-grid,
-    .faq-grid {
+    .faq-grid,
+    .trust-badges {
         grid-template-columns: 1fr;
     }
     
