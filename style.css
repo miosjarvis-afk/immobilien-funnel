@@ -40,7 +40,30 @@ body {
     align-items: center;
     padding: 100px 0 70px;
     background: linear-gradient(180deg, var(--grey-50) 0%, var(--white) 100%);
-    text-align: center;
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.hero-text {
+    text-align: left;
+}
+
+.hero-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(10, 22, 40, 0.15);
 }
 
 .hero h1 {
@@ -49,18 +72,12 @@ body {
     color: var(--navy-900);
     line-height: 1.2;
     margin-bottom: 24px;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .hero .subline {
     font-size: 20px;
     color: var(--grey-700);
     margin-bottom: 40px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .cta-button {
@@ -149,6 +166,19 @@ h2 {
 .value {
     background: var(--navy-900);
     color: white;
+}
+
+.value-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.value-image {
+    max-width: 400px;
+    height: auto;
+    margin: 0 auto 32px;
+    display: block;
+    opacity: 0.9;
 }
 
 .value h2 {
@@ -479,8 +509,25 @@ label {
 
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 968px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .hero-text {
+        text-align: center;
+    }
+    
     .hero h1 {
         font-size: 36px;
+    }
+    
+    .hero-image {
+        order: -1;
+    }
+    
+    .value-image {
+        max-width: 300px;
     }
     
     h2 {
@@ -514,6 +561,10 @@ label {
     .hero {
         min-height: 70vh;
         padding: 80px 0 60px;
+    }
+    
+    .value-image {
+        max-width: 250px;
     }
     
     .cta-button {
