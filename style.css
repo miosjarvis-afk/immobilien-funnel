@@ -258,7 +258,7 @@ h2 {
     color: white;
 }
 
-.trust-badge:first-child .trust-icon {
+.trust-badge:nth-child(2) .trust-icon {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
 }
 
