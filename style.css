@@ -167,21 +167,10 @@ h2 {
     color: white;
 }
 
-.value-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.value-image {
-    max-width: 550px;
-    height: auto;
-    margin: 0 auto 32px;
-    display: block;
-    opacity: 0.9;
-}
-
 .value h2 {
     color: white;
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 .value-grid {
@@ -307,6 +296,21 @@ h2 {
 
 .final-cta .cta-button {
     margin: 0 auto;
+}
+
+/* ==================== BOTTOM IMAGE ==================== */
+.bottom-image {
+    background: var(--grey-50);
+    padding: 60px 0;
+    text-align: center;
+}
+
+.bottom-image .value-image {
+    max-width: 550px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+    opacity: 0.9;
 }
 
 /* ==================== FAQ ==================== */
@@ -560,7 +564,7 @@ label {
         margin: 24px 0;
     }
     
-    .value-image {
+    .bottom-image .value-image {
         max-width: 450px;
     }
     
@@ -606,7 +610,7 @@ label {
         font-size: 18px;
     }
     
-    .value-image {
+    .bottom-image .value-image {
         max-width: 320px;
     }
     
