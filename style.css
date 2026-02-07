@@ -247,10 +247,6 @@ h2 {
     color: white;
 }
 
-.trust-badge:nth-child(2) .trust-icon {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-}
-
 .trust-badge p {
     font-size: 16px;
     color: var(--navy-900);
@@ -294,23 +290,16 @@ h2 {
     margin-bottom: 32px;
 }
 
-.final-cta .cta-button {
-    margin: 0 auto;
-}
-
-/* ==================== BOTTOM IMAGE ==================== */
-.bottom-image {
-    background: var(--grey-50);
-    padding: 60px 0;
-    text-align: center;
-}
-
-.bottom-image .value-image {
+.final-cta-image {
     max-width: 550px;
     height: auto;
-    margin: 0 auto;
+    margin: 40px auto;
     display: block;
     opacity: 0.9;
+}
+
+.final-cta .cta-button {
+    margin: 0 auto;
 }
 
 /* ==================== FAQ ==================== */
@@ -564,7 +553,7 @@ label {
         margin: 24px 0;
     }
     
-    .bottom-image .value-image {
+    .final-cta-image {
         max-width: 450px;
     }
     
@@ -610,7 +599,7 @@ label {
         font-size: 18px;
     }
     
-    .bottom-image .value-image {
+    .final-cta-image {
         max-width: 320px;
     }
     
