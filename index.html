@@ -14,443 +14,133 @@
 
     <style>
 
-* {
-
-    margin: 0;
-
-    padding: 0;
-
-    box-sizing: border-box;
-
-}
-
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
 
-    --navy-900: #0a1628;
+    --navy-900: #0a1628; --navy-800: #152a47; --navy-700: #1e3a5f;
 
-    --navy-800: #152a47;
+    --gold-500: #c9a35b; --grey-50: #f8f9fa; --grey-100: #e9ecef;
 
-    --grey-50: #f8f9fa;
-
-    --grey-700: #495057;
-
-    --gold-500: #c9a35b;
+    --grey-200: #dee2e6; --grey-700: #495057;
 
 }
 
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; color: var(--navy-900); line-height: 1.6; }
 
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
-body {
+.hero { min-height: 80vh; display: flex; align-items: center; padding: 100px 0 70px; background: linear-gradient(180deg, var(--grey-50) 0%, white 100%); }
 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+.hero-content { text-align: center; max-width: 800px; margin: 0 auto; }
 
-    color: var(--navy-900);
+.hero h1 { font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
 
-    line-height: 1.6;
+.hero .subline { font-size: 20px; color: var(--grey-700); margin-bottom: 32px; }
 
-}
+.cta-button { background: var(--navy-800); color: white; border: none; padding: 18px 48px; font-size: 17px; font-weight: 600; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 14px rgba(10, 22, 40, 0.15); transition: all 0.3s; }
 
+.cta-button:hover { background: var(--navy-900); transform: translateY(-2px); }
 
+.micro-text { font-size: 15px; color: var(--grey-700); margin-top: 20px; }
 
-.container {
+section { padding: 70px 0; }
 
-    max-width: 1100px;
+h2 { font-size: 36px; font-weight: 700; margin-bottom: 40px; text-align: center; }
 
-    margin: 0 auto;
+.questions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 900px; margin: 0 auto 40px; }
 
-    padding: 0 24px;
+.question-card { background: var(--grey-50); padding: 28px; border-radius: 8px; border-left: 3px solid var(--gold-500); transition: all 0.3s; }
 
-}
+.question-card:hover { background: white; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transform: translateY(-2px); }
 
+.question-card p { font-size: 17px; font-weight: 500; }
 
+.conclusion { text-align: center; font-size: 18px; color: var(--grey-700); max-width: 700px; margin: 0 auto; line-height: 1.7; }
 
-.hero {
+.value { background: var(--navy-900); color: white; }
 
-    min-height: 80vh;
+.value h2 { color: white; }
 
-    display: flex;
+.value-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 900px; margin: 0 auto; }
 
-    align-items: center;
+.value-card { background: var(--navy-800); padding: 28px; border-radius: 8px; border-left: 3px solid var(--gold-500); transition: all 0.3s; }
 
-    padding: 100px 0 70px;
+.value-card:hover { background: var(--navy-700); transform: translateY(-2px); }
 
-    background: linear-gradient(180deg, var(--grey-50) 0%, white 100%);
+.value-icon { font-size: 40px; margin-bottom: 16px; }
 
-}
+.value-card h3 { color: white; margin-bottom: 12px; font-size: 20px; font-weight: 600; }
 
+.value-card p { font-size: 17px; color: white; }
 
+.trust { background: var(--grey-50); text-align: center; padding: 60px 0; }
 
-.hero-content {
+.trust-badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 900px; margin: 0 auto; }
 
-    text-align: center;
+.trust-icon { width: 72px; height: 72px; margin: 0 auto 16px; background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; box-shadow: 0 8px 24px rgba(21, 42, 71, 0.15); }
 
-    max-width: 800px;
+.trust-badge p { font-size: 16px; font-weight: 600; }
 
-    margin: 0 auto;
+.final-cta { text-align: center; padding: 80px 0; }
 
-}
+footer { background: var(--navy-900); color: white; padding: 40px 0; text-align: center; }
 
+footer a { color: rgba(255, 255, 255, 0.8); text-decoration: none; margin: 0 20px; font-size: 15px; transition: color 0.2s; }
 
+footer a:hover { color: white; }
 
-.hero h1 {
+.quiz-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 22, 40, 0.85); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
 
-    font-size: 48px;
+.quiz-content { background: white; border-radius: 12px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 48px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3); }
 
-    font-weight: 700;
+.quiz-header { margin-bottom: 48px; }
 
-    line-height: 1.2;
+.progress-bar { height: 6px; background: var(--grey-200); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
 
-    margin-bottom: 20px;
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--navy-800) 0%, var(--gold-500) 100%); transition: width 0.4s ease; width: 0; }
 
-}
+.progress-text { font-size: 14px; color: var(--grey-700); text-align: center; font-weight: 500; }
 
+.quiz-question h3 { font-size: 24px; color: var(--navy-900); margin-bottom: 20px; line-height: 1.3; font-weight: 600; }
 
+.quiz-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
 
-.hero .subline {
+.quiz-option { background: var(--grey-100); border: 2px solid var(--grey-200); padding: 18px 24px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; font-size: 16px; color: var(--navy-900); }
 
-    font-size: 20px;
+.quiz-option:hover { border-color: var(--gold-500); background: white; }
 
-    color: var(--grey-700);
+.quiz-option.selected { background: var(--navy-800); color: white; border-color: var(--navy-800); }
 
-    margin-bottom: 32px;
+.quiz-nav { display: flex; justify-content: space-between; margin-top: 32px; }
 
-}
+.quiz-nav button { padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
 
+.btn-back { background: transparent; border: 2px solid var(--grey-200); color: var(--navy-900); }
 
+.btn-back:hover { border-color: var(--navy-800); }
 
-.cta-button {
+.btn-next { background: var(--navy-800); border: none; color: white; }
 
-    background: var(--navy-800);
+.btn-next:hover { background: var(--navy-900); }
 
-    color: white;
+.btn-next:disabled { background: var(--grey-200); cursor: not-allowed; opacity: 0.6; }
 
-    border: none;
+input[type="text"], input[type="email"], input[type="tel"] { width: 100%; padding: 16px 20px; border: 2px solid var(--grey-200); border-radius: 6px; font-size: 16px; font-family: inherit; transition: all 0.2s; background: var(--grey-100); color: var(--navy-900); }
 
-    padding: 18px 48px;
+input:focus { outline: none; border-color: var(--navy-800); background: white; box-shadow: 0 0 0 3px rgba(21, 42, 71, 0.1); }
 
-    font-size: 17px;
-
-    font-weight: 600;
-
-    border-radius: 6px;
-
-    cursor: pointer;
-
-    box-shadow: 0 4px 14px rgba(10, 22, 40, 0.15);
-
-}
-
-
-
-.cta-button:hover {
-
-    background: var(--navy-900);
-
-}
-
-
-
-.micro-text {
-
-    font-size: 15px;
-
-    color: var(--grey-700);
-
-    margin-top: 20px;
-
-}
-
-
-
-section {
-
-    padding: 70px 0;
-
-}
-
-
-
-h2 {
-
-    font-size: 36px;
-
-    font-weight: 700;
-
-    margin-bottom: 40px;
-
-    text-align: center;
-
-}
-
-
-
-.questions-grid {
-
-    display: grid;
-
-    grid-template-columns: repeat(2, 1fr);
-
-    gap: 20px;
-
-    max-width: 900px;
-
-    margin: 0 auto 40px;
-
-}
-
-
-
-.question-card {
-
-    background: var(--grey-50);
-
-    padding: 28px;
-
-    border-radius: 8px;
-
-    border-left: 3px solid var(--gold-500);
-
-}
-
-
-
-.question-card p {
-
-    font-size: 17px;
-
-    font-weight: 500;
-
-}
-
-
-
-.conclusion {
-
-    text-align: center;
-
-    font-size: 18px;
-
-    color: var(--grey-700);
-
-    max-width: 700px;
-
-    margin: 0 auto;
-
-}
-
-
-
-.value {
-
-    background: var(--navy-900);
-
-    color: white;
-
-}
-
-
-
-.value h2 {
-
-    color: white;
-
-}
-
-
-
-.value-grid {
-
-    display: grid;
-
-    grid-template-columns: repeat(3, 1fr);
-
-    gap: 20px;
-
-    max-width: 900px;
-
-    margin: 0 auto;
-
-}
-
-
-
-.value-card {
-
-    background: var(--navy-800);
-
-    padding: 28px;
-
-    border-radius: 8px;
-
-    border-left: 3px solid var(--gold-500);
-
-}
-
-
-
-.value-icon {
-
-    font-size: 40px;
-
-    margin-bottom: 16px;
-
-}
-
-
-
-.value-card h3 {
-
-    color: white;
-
-    margin-bottom: 12px;
-
-    font-size: 20px;
-
-    font-weight: 600;
-
-}
-
-
-
-.value-card p {
-
-    font-size: 17px;
-
-    color: white;
-
-}
-
-
-
-.trust {
-
-    background: var(--grey-50);
-
-    text-align: center;
-
-    padding: 60px 0;
-
-}
-
-
-
-.trust-badges {
-
-    display: grid;
-
-    grid-template-columns: repeat(3, 1fr);
-
-    gap: 40px;
-
-    max-width: 900px;
-
-    margin: 0 auto;
-
-}
-
-
-
-.trust-icon {
-
-    width: 72px;
-
-    height: 72px;
-
-    margin: 0 auto 16px;
-
-    background: linear-gradient(135deg, var(--navy-800) 0%, #1e3a5f 100%);
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 32px;
-
-    color: white;
-
-}
-
-
-
-.trust-badge p {
-
-    font-size: 16px;
-
-    font-weight: 600;
-
-}
-
-
-
-.final-cta {
-
-    text-align: center;
-
-    padding: 80px 0;
-
-}
-
-
-
-footer {
-
-    background: var(--navy-900);
-
-    color: white;
-
-    padding: 40px 0;
-
-    text-align: center;
-
-}
-
-
-
-footer a {
-
-    color: rgba(255, 255, 255, 0.8);
-
-    text-decoration: none;
-
-    margin: 0 20px;
-
-    font-size: 15px;
-
-}
-
-
-
-footer a:hover {
-
-    color: white;
-
-}
-
-
+label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--navy-900); font-size: 15px; }
 
 @media (max-width: 768px) {
 
-    .hero h1 {
+    .hero h1 { font-size: 32px; }
 
-        font-size: 32px;
+    .questions-grid, .value-grid, .trust-badges { grid-template-columns: 1fr; }
 
-    }
+    .quiz-content { padding: 32px 24px; }
 
-    .questions-grid,
-
-    .value-grid,
-
-    .trust-badges {
-
-grid-template-columns: 1fr;
-
-    }
+    section { padding: 60px 0; }
 
 }
 
@@ -470,7 +160,7 @@ grid-template-columns: 1fr;
 
                 <p class="subline">Kostenloser Immobilien-Eignungscheck für Schweizer Angestellte & junge Investoren</p>
 
-                <button class="cta-button">Kostenlosen Check starten</button>
+                <button class="cta-button" onclick="startQuiz()">Kostenlosen Check starten</button>
 
                 <p class="micro-text">⏱ Dauer: ca. 2 Minuten · unverbindlich</p>
 
@@ -504,7 +194,7 @@ grid-template-columns: 1fr;
 
         </div>
 
-    </section>
+</section>
 
 
 
@@ -580,11 +270,35 @@ grid-template-columns: 1fr;
 
             <h2>Bereit für deine Einschätzung?</h2>
 
-            <button class="cta-button">Kostenlosen Check starten</button>
+            <button class="cta-button" onclick="startQuiz()">Kostenlosen Check starten</button>
 
         </div>
 
     </section>
+
+
+
+    <div id="quiz-container" class="quiz-container">
+
+        <div class="quiz-content">
+
+            <div class="quiz-header">
+
+                <div class="progress-bar">
+
+                    <div class="progress-fill" id="progress-fill"></div>
+
+                </div>
+
+                <p class="progress-text" id="progress-text">Schritt 1 von 6</p>
+
+            </div>
+
+            <div id="quiz-questions"></div>
+
+        </div>
+
+    </div>
 
 
 
@@ -594,7 +308,7 @@ grid-template-columns: 1fr;
 
             <p style="margin-bottom: 16px; color: rgba(255, 255, 255, 0.7); font-size: 14px;">
 
-                © 2025 IVORA. Alle Rechte vorbehalten.
+                © 2025 Ivora. Alle Rechte vorbehalten.
 
             </p>
 
@@ -611,4 +325,19 @@ grid-template-columns: 1fr;
     </footer>
 
 
+
+    <script>
+
+const TELEGRAM_BOT_TOKEN='8097168362:AAG4aeWZF_iL_jg0D0chIt49HuQc20QrINc';const TELEGRAM_CHAT_ID='830554328';let analytics=JSON.parse(localStorage.getItem('funnel_analytics')||'{"views":0,"quizStarts":0,"quizComplete":0,"leads":0,"leadsList":[]}');const quizQuestions=[{id:'q1_goal',question:'Was ist dein Ziel mit Immobilien?',context:'',options:[{text:'Langfristig passiv Vermögen aufbauen',value:'wealth',score:3},{text:'Zusätzliche Einnahmen neben dem Job',value:'income',score:3},{text:'Altersvorsorge & Sicherheit',value:'retirement',score:3},{text:'Ich informiere mich aktuell',value:'research',score:1}]},{id:'q2_timing',question:'Wann möchtest du prüfen, ob eine erste Kapitalanlage für dich passt?',context:'',options:[{text:'So schnell wie möglich',value:'asap',score:3},{text:'In den nächsten 6 Monaten',value:'0-6m',score:3},{text:'6–12 Monate',value:'6-12m',score:2},{text:'Noch offen',value:'open',score:0}]},{id:'q3_income',question:'In welchem Bereich liegt dein monatliches Nettoeinkommen?',context:'',options:[{text:"Unter 4'500 CHF",value:'<4500',score:0},{text:"4'500–6'000 CHF",value:'4500-6000',score:2},{text:"6'000–8'000 CHF",value:'6000-8000',score:4},{text:"Über 8'000 CHF",value:'8000+',score:5}]},{id:'q4_equity',question:'Wie viel Eigenkapital könntest du einsetzen, ohne deine Sicherheit zu gefährden?',context:'',options:[{text:"Unter 20'000 CHF",value:'<20k',score:1},{text:"20'000–40'000 CHF",value:'20-40k',score:2},{text:"40'000–80'000 CHF",value:'40-80k',score:4},{text:"Über 80'000 CHF",value:'80k+',score:5}]},{id:'q5_employment',question:'Wie ist deine aktuelle berufliche Situation?',context:'',options:[{text:'Festangestellt (unbefristet)',value:'permanent',score:4},{text:'Festangestellt (befristet)',value:'temporary',score:2},{text:'Selbstständig',value:'self-employed',score:2},{text:'In Ausbildung/Studium',value:'education',score:0}]},{id:'q6_lifesituation',question:'Wie sieht deine aktuelle Lebenssituation aus?',context:'',options:[{text:'Alleinstehend',value:'single',score:1},{text:'Partnerschaft (keine Kinder)',value:'couple',score:1},{text:'Partnerschaft mit Kindern',value:'family',score:0}]}];let currentQuestion=0;let answers={};let quizStartTime=null;function trackEvent(e,t={}){typeof gtag!=="undefined"&&gtag("event",e,t);typeof fbq!=="undefined"&&fbq("track",e,t);console.log("Event:",e,t)}function startQuiz(){quizStartTime=Date.now();currentQuestion=0;answers={};trackEvent("StartQuiz");trackAnalyticsEvent("quiz_start");document.getElementById("quiz-container").style.display="flex";document.body.style.overflow="hidden";renderQuestion()}function renderQuestion(){const e=quizQuestions[currentQuestion];const t=document.getElementById("quiz-questions");const s=((currentQuestion+1)/quizQuestions.length)*100;document.getElementById("progress-fill").style.width=s+"%";document.getElementById("progress-text").textContent=`Schritt ${currentQuestion+1} von ${quizQuestions.length}`;t.innerHTML=`<div class="quiz-question"><h3>${e.question}</h3>${e.context?`<p>${e.context}</p>`:""}<div class="quiz-options">${e.options.map(((t,s)=>`<div class="quiz-option" onclick="selectOption('${e.id}','${t.value}',${t.score},${s})">${t.text}</div>`)).join("")}</div><p class="micro-text" style="text-align:center;margin-top:24px;">Keine Sorge – du brauchst keine exakten Zahlen. Bereiche reichen.</p></div><div class="quiz-nav">${currentQuestion>0?'<button class="btn-back" onclick="previousQuestion()">Zurück</button>':"<div></div>"}<button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>Weiter</button></div>`;if(answers[e.id]){const t=e.options.findIndex((e=>e.value===answers[e.id].value));if(t>=0){document.querySelectorAll(".quiz-option")[t].classList.add("selected");document.getElementById("btn-next").disabled=false}}trackEvent("QuizQuestion",{q:currentQuestion+1})}function
+
+selectOption(e,t,s,n){answers[e]={value:t,score:s};document.querySelectorAll(".quiz-option").forEach((e=>e.classList.remove("selected")));document.querySelectorAll(".quiz-option")[n].classList.add("selected");document.getElementById("btn-next").disabled=false}function previousQuestion(){if(currentQuestion>0){currentQuestion--;renderQuestion()}}function nextQuestion(){if(currentQuestion<quizQuestions.length-1){currentQuestion++;renderQuestion()}else{completeQuiz()}}function completeQuiz(){trackEvent("QuizComplete");trackAnalyticsEvent("quiz_complete");showLoading();const e=calculateScore();setTimeout((()=>showMiniResult(e)),2e3)}function calculateScore(){return Object.values(answers).reduce(((e,t)=>e+t.score),0)}function showLoading(){document.getElementById("quiz-questions").innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="width:60px;height:60px;border:4px solid #e9ecef;border-top-color:#c9a35b;border-radius:50%;margin:0 auto 24px;animation:spin 1s linear infinite;"></div><h3 style="color:#0a1628;margin-bottom:12px;">Wir werten deine Angaben aus...</h3><p style="color:#495057;font-size:15px;margin-bottom:32px;">Analysiere Einkommen, Eigenkapital und Lebenssituation...</p><div style="background:#e9ecef;height:8px;border-radius:4px;overflow:hidden;max-width:300px;margin:0 auto;"><div style="background:linear-gradient(90deg,#152a47 0%,#c9a35b 100%);height:100%;width:0%;animation:progress 2s ease-out forwards;"></div></div></div><style>@keyframes spin{to{transform:rotate(360deg);}}@keyframes progress{to{width:100%;}}</style>'}function showMiniResult(e){const t=getEignungslevel(e);document.getElementById("quiz-questions").innerHTML=`<div class="quiz-question"><h3 style="text-align:center;color:#c9a35b;">Deine Ausgangslage ist grundsätzlich ${t.label.toLowerCase()}.</h3><ul style="list-style:none;margin:32px 0;padding:0;"><li style="padding:12px 0;font-size:16px;">✓ Einkommen liegt im relevanten Bereich</li><li style="padding:12px 0;font-size:16px;">✓ Eigenkapital ist grundsätzlich einsetzbar</li><li style="padding:12px 0;font-size:16px;">✓ Ziel passt zu langfristigem Vermögensaufbau</li></ul><p style="color:#495057;margin:24px 0;line-height:1.8;">Für eine fundierte Einschätzung sind 1–2 Punkte kurz persönlich zu klären – das lässt sich nicht sinnvoll automatisieren.</p><button class="cta-button" onclick="showLeadForm()" style="width:100%;margin-top:24px;">Persönliches Ergebnis erhalten</button></div>`}function showLeadForm(){document.getElementById("quiz-questions").innerHTML='<div class="quiz-question"><h3 style="text-align:center;">Dein persönliches Ergebnis + kurze Einordnung</h3><p style="color:#495057;margin:24px 0;text-align:center;line-height:1.8;">Wir senden dir dein vollständiges Ergebnis per E-Mail und klären es auf Wunsch kurz telefonisch (5–10 Min), damit du eine realistische Einschätzung bekommst.</p><form id="lead-form" onsubmit="submitLead(event)" style="max-width:500px;margin:0 auto;"><div style="margin-bottom:20px;"><label>Vorname *</label><input type="text" id="firstName" required></div><div style="margin-bottom:20px;"><label>E-Mail *</label><input type="email" id="email" required></div><div style="margin-bottom:20px;"><label>Telefonnummer *</label><input type="tel" id="phone" required><p style="font-size:13px;color:#495057;margin-top:8px;">Deine Nummer wird nur für diese Einordnung verwendet – nicht für Werbung.</p></div><div style="margin-bottom:24px;"><label style="display:flex;align-items:start;cursor:pointer;"><input type="checkbox" id="consent" required style="margin-right:12px;margin-top:4px;"><span style="font-size:14px;color:#495057;">Ich bin einverstanden, telefonisch zur Ergebnis-Einordnung kontaktiert zu werden.</span></label></div><button type="submit" class="cta-button" style="width:100%;">Ergebnis freischalten</button></form></div>'}async function submitLead(e){e.preventDefault();const t=document.getElementById("firstName").value;const
+
+s=document.getElementById("email").value;const n=document.getElementById("phone").value;const o=document.getElementById("consent").checked;const r=calculateScore();const c=getEignungslevel(r);trackEvent("Lead",{score:r});const i={firstName:t,email:s,phone:n,consent:o,score:r,level:c.label,answers:answers,timestamp:(new Date).toISOString(),source:(new URLSearchParams(window.location.search)).get("utm_source")||"direct"};trackAnalyticsEvent("lead",i);await sendToTelegram(i);showFullResult(i)}async function sendToTelegram(e){const t=`🎯 NEUER LEAD - Immobilien-Check\n\n👤 Name: ${e.firstName}\n📧 E-Mail: ${e.email}\n📱 Telefon: ${e.phone}\n\n📊 Ergebnis:\n• Score: ${e.score} Punkte\n• Level: ${e.level}\n\n📋 Antworten:\n• Ziel: ${e.answers?.q1_goal?.value||"-"}\n• Timing: ${e.answers?.q2_timing?.value||"-"}\n• Einkommen: ${e.answers?.q3_income?.value||"-"}\n• Eigenkapital: ${e.answers?.q4_equity?.value||"-"}\n• Anstellung: ${e.answers?.q5_employment?.value||"-"}\n• Lebenssituation: ${e.answers?.q6_lifesituation?.value||"-"}\n\n✅ Consent: ${e.consent?"Ja":"Nein"}\n🔗 Source: ${e.source}\n⏰ ${new Date(e.timestamp).toLocaleString("de-CH")}`;try{const s=await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:t})});const n=await s.json();if(n.ok){console.log("✅ Lead sent")}else{console.error("❌ Telegram error:",n)}}catch(e){console.error("❌ Error:",e)}}function getEignungslevel(e){if(e>=12){return{label:"Solide Ausgangslage",description:"Deine finanzielle Situation bietet eine solide Basis für ein Immobilieninvestment.",income:"im relevanten Bereich",equity:"einsetzbar",stability:"stabil",timing:"kurzfristig prüfbar"}}else if(e>=8){return{label:"Prüfbar mit Klärung",description:"Deine Ausgangslage ist interessant. Einige Punkte sollten wir kurz klären.",income:"grundsätzlich relevant",equity:"vorhanden",stability:"gemischt",timing:"mittelfristig"}}else{return{label:"Aktuell eher nicht – aber planbar",description:"Im Moment ist die Basis noch ausbaufähig. Lass uns schauen, welche Schritte dich weiterbringen.",income:"ausbaufähig",equity:"im Aufbau",stability:"noch im Aufbau",timing:"langfristig"}}}function showFullResult(e){const t=getEignungslevel(e.score);document.getElementById("quiz-questions").innerHTML=`<div class="quiz-question"><h3 style="text-align:center;color:#c9a35b;margin-bottom:32px;">Dein Ergebnis: ${t.label}</h3><div style="background:#f8f9fa;padding:24px;border-radius:8px;margin-bottom:24px;"><h4 style="color:#0a1628;margin-bottom:16px;">Deine Kurz-Einordnung</h4><ul style="list-style:none;padding:0;"><li style="padding:8px 0;">📊 Einkommen: ${t.income}</li><li style="padding:8px 0;">💰 Eigenkapital: ${t.equity}</li><li style="padding:8px 0;">🏢 Stabilität: ${t.stability}</li><li style="padding:8px 0;">📅 Timing: ${t.timing}</li></ul></div><div style="margin-bottom:32px;"><h4 style="color:#0a1628;margin-bottom:12px;">Was das praktisch bedeutet</h4><p style="color:#495057;line-height:1.8;">${t.description}</p></div><div style="text-align:center;padding:32px 0;background:#f8f9fa;border-radius:8px;"><h4 style="color:#0a1628;margin-bottom:16px;">Möchtest du deine Situation kurz einordnen lassen?</h4><p style="color:#495057;margin-bottom:24px;">Wir melden uns innerhalb von 24 Stunden bei dir.</p><button class="cta-button" onclick="closeQuiz()">Verstanden</button></div><p style="text-align:center;font-size:14px;color:#495057;margin-top:24px;">Dein Ergebnis wurde an ${e.email} gesendet.</p></div>`}function closeQuiz(){document.getElementById("quiz-container").style.display="none";document.body.style.overflow="auto";window.scrollTo({top:0,behavior:"smooth"})}function saveAnalytics(){localStorage.setItem("funnel_analytics",JSON.stringify(analytics))}function
+
+trackAnalyticsEvent(e,t={}){switch(e){case"view":analytics.views++;break;case"quiz_start":analytics.quizStarts++;break;case"quiz_complete":analytics.quizComplete++;break;case"lead":analytics.leads++;analytics.leadsList.push(t);break}saveAnalytics()}document.addEventListener("DOMContentLoaded",(function(){trackEvent("ViewContent");trackAnalyticsEvent("view")}));
+
+    </script>
+
 </body>
+
+</html>
