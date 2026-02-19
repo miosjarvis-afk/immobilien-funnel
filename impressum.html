@@ -3,48 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impressum | Immobilien-Eignungscheck</title>
+    <title>Impressum | Immobilien.ivora.ch</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .legal-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 80px 24px 60px;
+        }
+        .legal-content h1 {
+            font-size: 36px;
+            color: var(--navy-900);
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .legal-content h2 {
+            font-size: 24px;
+            color: var(--navy-800);
+            margin-top: 48px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .legal-content p,
+        .legal-content li {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--grey-700);
+            margin-bottom: 16px;
+        }
+        .legal-content a {
+            color: var(--gold-500);
+            text-decoration: none;
+            border-bottom: 1px solid var(--gold-500);
+        }
+        .legal-content a:hover {
+            color: var(--navy-800);
+            border-bottom-color: var(--navy-800);
+        }
+        .contact-box {
+            background: var(--grey-50);
+            border-left: 4px solid var(--gold-500);
+            padding: 24px;
+            margin: 32px 0;
+            border-radius: 6px;
+        }
+        .contact-box p {
+            margin-bottom: 8px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 48px;
+            padding: 12px 24px;
+            background: var(--grey-100);
+            color: var(--navy-800);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            background: var(--navy-800);
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <section style="padding: 80px 0; min-height: 100vh;">
-        <div class="container" style="max-width: 800px;">
-            <h1 style="margin-bottom: 40px;">Impressum</h1>
-            
-            <p style="margin-bottom: 24px; color: var(--secondary-grey);">
-                <strong>Angaben gemäss Art. 3 Abs. 1 lit. e ZGB und Art. 9 FIDLEG</strong>
-            </p>
-            
-            <div style="margin-bottom: 32px;">
-                <h3 style="color: var(--primary-blue); margin-bottom: 12px;">Betreiber</h3>
-                <p style="color: var(--secondary-grey);">
-                    [FIRMENNAME]<br>
-                    [STRASSE]<br>
-                    [PLZ] [ORT]<br>
-                    Schweiz
-                </p>
-            </div>
-            
-            <div style="margin-bottom: 32px;">
-                <h3 style="color: var(--primary-blue); margin-bottom: 12px;">Kontakt</h3>
-                <p style="color: var(--secondary-grey);">
-                    E-Mail: kontakt@example.ch<br>
-                    Telefon: +41 XX XXX XX XX
-                </p>
-            </div>
-            
-            <div style="margin-bottom: 32px;">
-                <h3 style="color: var(--primary-blue); margin-bottom: 12px;">Haftungsausschluss</h3>
-                <p style="color: var(--secondary-grey); line-height: 1.8;">
-                    Der Immobilien-Eignungscheck ist keine Finanzberatung und kein Anlageversprechen. 
-                    Die Inhalte dienen ausschliesslich der Orientierung. Für verbindliche Auskünfte wenden Sie sich bitte an qualifizierte Fachpersonen.
-                </p>
-            </div>
-            
-            <div style="text-align: center; margin-top: 60px;">
-                <a href="index.html" class="cta-button">Zurück zur Startseite</a>
-            </div>
+    <div class="legal-content">
+        <h1>Impressum</h1>
+
+        <div class="contact-box">
+            <p><strong>Samuel Rovitti - IVORA</strong></p>
+            <p>Bustelstrasse 4b</p>
+            <p>4333 Münchwilen AG</p>
+            <p>Schweiz</p>
+            <p><br>E-Mail: <a href="mailto:info@ivora.ch">info@ivora.ch</a></p>
         </div>
-    </section>
+
+        <h2>Haftungsausschluss</h2>
+        
+        <p><strong>Haftung für Inhalte:</strong> Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.</p>
+
+        <p><strong>Haftung für Links:</strong> Unsere Website enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>
+
+        <h2>Urheberrecht</h2>
+        
+        <p>Die auf dieser Website veröffentlichten Inhalte und Werke unterliegen dem Schweizer Urheberrecht. Jede Art der Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedarf der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+
+        <a href="index.html" class="back-link">← Zurück zur Startseite</a>
+    </div>
 </body>
 </html>
