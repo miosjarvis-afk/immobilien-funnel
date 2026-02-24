@@ -403,3 +403,34 @@ document.addEventListener('DOMContentLoaded', function() {
     trackEvent('ViewContent', { content_name: 'landing_page' });
     trackAnalyticsEvent('view');
 });
+     // Reset Button
+
+        document.getElementById('reset-btn').addEventListener('click', function() {
+
+            if (confirm('Wirklich alle Analytics-Daten zurücksetzen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+
+                localStorage.setItem('funnel_analytics', JSON.stringify({
+
+                    pageViews: 0,
+
+                    quizStarts: 0,
+
+                    quizSteps: [0, 0, 0, 0, 0, 0],
+
+                    quizComplete: 0,
+
+                    formShown: 0,
+
+                    leads: 0,
+
+                    leadsList: []
+
+                }));
+
+                loadDashboard();
+
+                alert('✅ Analytics erfolgreich zurückgesetzt!');
+
+            }
+
+        });
