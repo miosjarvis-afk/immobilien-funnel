@@ -38,6 +38,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-s
 
 .hero .subline { font-size: 20px; color: var(--grey-700); margin-bottom: 32px; }
 
+.hero-image { max-width: 400px; width: 100%; margin: 0 auto 32px; display: block; border-radius: 8px; }
+
 .cta-button { background: var(--navy-800); color: white; border: none; padding: 18px 48px; font-size: 17px; font-weight: 600; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 14px rgba(10, 22, 40, 0.15); transition: all 0.3s; }
 
 .cta-button:hover { background: var(--navy-900); transform: translateY(-2px); }
@@ -83,6 +85,8 @@ h2 { font-size: 36px; font-weight: 700; margin-bottom: 40px; text-align: center;
 .trust-badge p { font-size: 16px; font-weight: 600; }
 
 .final-cta { text-align: center; padding: 80px 0; }
+
+.final-cta-image { max-width: 500px; width: 100%; margin: 0 auto 40px; display: block; border-radius: 8px; }
 
 footer { background: var(--navy-900); color: white; padding: 40px 0; text-align: center; }
 
@@ -136,6 +140,10 @@ label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--navy-
 
     .hero h1 { font-size: 32px; }
 
+    .hero-image { max-width: 300px; }
+
+    .final-cta-image { max-width: 350px; }
+
     .questions-grid, .value-grid, .trust-badges { grid-template-columns: 1fr; }
 
     .quiz-content { padding: 32px 24px; }
@@ -157,6 +165,8 @@ label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--navy-
             <div class="hero-content">
 
                 <h1>Reicht dein Einkommen für eine Kapitalanlage-Immobilie?</h1>
+
+                <img src="growth-arrow.jpg" alt="Wachstumspfeil – Vermögensaufbau durch Immobilien" class="hero-image">
 
                 <p class="subline">Kostenloser Immobilien-Eignungscheck für Schweizer Angestellte & junge Investoren</p>
 
@@ -269,6 +279,8 @@ label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--navy-
         <div class="container">
 
             <h2>Bereit für deine Einschätzung?</h2>
+
+            <img src="growth-buildings.jpg" alt="Immobilien-Wachstum – Gebäude als Kapitalanlage" class="final-cta-image">
 
             <button class="cta-button" onclick="startQuiz()">Kostenlosen Check starten</button>
 
