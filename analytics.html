@@ -45,11 +45,20 @@
             padding: 10px 20px; border-radius: 4px; cursor: pointer;
         }
         
+        .action-buttons { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+
         .refresh-btn {
             background: #c9a35b; color: #0a1628; border: none;
             padding: 12px 24px; border-radius: 4px; font-size: 16px;
-            font-weight: 600; cursor: pointer; margin-bottom: 20px;
+            font-weight: 600; cursor: pointer;
         }
+
+        .reset-btn {
+            background: #ef4444; color: white; border: none;
+            padding: 12px 24px; border-radius: 4px; font-size: 16px;
+            font-weight: 600; cursor: pointer;
+        }
+        .reset-btn:hover { background: #dc2626; }
         
         .stats-grid {
             display: grid;
@@ -171,6 +180,32 @@
             padding: 40px;
             color: #8b9cb8;
         }
+
+        /* Confirm Modal */
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .confirm-overlay.active { display: flex; }
+        .confirm-box {
+            background: #152a47;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .confirm-box h3 { margin-bottom: 12px; color: #ef4444; }
+        .confirm-box p { color: #8b9cb8; margin-bottom: 24px; }
+        .confirm-box .btn-group { display: flex; gap: 12px; justify-content: center; }
+        .confirm-box button { padding: 12px 24px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; }
+        .btn-cancel { background: #6b7280; color: white; }
+        .btn-confirm-delete { background: #ef4444; color: white; }
     </style>
 </head>
 <body>
@@ -189,7 +224,10 @@
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
             
-            <button class="refresh-btn" onclick="loadAnalytics()">🔄 Aktualisieren</button>
+            <div class="action-buttons">
+                <button class="refresh-btn" onclick="loadAnalytics()">🔄 Aktualisieren</button>
+                <button class="reset-btn" onclick="showResetConfirm()">🗑 Alle Daten zurücksetzen</button>
+            </div>
             
             <!-- Key Metrics -->
             <div class="stats-grid">
@@ -269,9 +307,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Reset Confirm Modal -->
+    <div class="confirm-overlay" id="resetModal">
+        <div class="confirm-box">
+            <h3>⚠️ Daten zurücksetzen?</h3>
+            <p>Alle Analytics-Daten (Views, Quiz-Starts, Leads) werden unwiderruflich gelöscht.</p>
+            <div class="btn-group">
+                <button class="btn-cancel" onclick="hideResetConfirm()">Abbrechen</button>
+                <button class="btn-confirm-delete" onclick="resetAnalytics()">Ja, alles löschen</button>
+            </div>
+        </div>
+    </div>
     
     <script>
-        // ==================== AUTH (wie Mission Control) ====================
+        // ==================== AUTH ====================
         const TOKEN = 'immobilien_2026_samu';
         
         function checkAuth() {
@@ -299,6 +349,27 @@
         function logout() {
             localStorage.removeItem('analytics_token');
             location.reload();
+        }
+
+        // ==================== RESET ====================
+        function showResetConfirm() {
+            document.getElementById('resetModal').classList.add('active');
+        }
+
+        function hideResetConfirm() {
+            document.getElementById('resetModal').classList.remove('active');
+        }
+
+        function resetAnalytics() {
+            localStorage.setItem('funnel_analytics', JSON.stringify({
+                views: 0,
+                quizStarts: 0,
+                quizComplete: 0,
+                leads: 0,
+                leadsList: []
+            }));
+            hideResetConfirm();
+            loadAnalytics();
         }
         
         // ==================== ANALYTICS ====================
@@ -349,6 +420,8 @@
                     `;
                 }).join('');
                 document.getElementById('leads-table').innerHTML = tableHtml;
+            } else {
+                document.getElementById('leads-table').innerHTML = '<div class="no-data">Noch keine Leads vorhanden</div>';
             }
         }
         
