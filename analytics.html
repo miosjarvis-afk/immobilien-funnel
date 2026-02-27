@@ -13,7 +13,6 @@
             color: white;
         }
         
-        /* Auth Screen */
         .auth-screen {
             display: flex;
             flex-direction: column;
@@ -33,11 +32,10 @@
         }
         .auth-screen .error { color: #ef4444; margin-top: 20px; display: none; }
         
-        /* Dashboard */
         #dashboard { display: none; padding: 40px 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 12px; }
         .header h1 { font-size: 32px; color: #c9a35b; margin: 0; }
         
         .logout-btn {
@@ -45,7 +43,7 @@
             padding: 10px 20px; border-radius: 4px; cursor: pointer;
         }
         
-        .action-buttons { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .action-buttons { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
 
         .refresh-btn {
             background: #c9a35b; color: #0a1628; border: none;
@@ -59,6 +57,12 @@
             font-weight: 600; cursor: pointer;
         }
         .reset-btn:hover { background: #dc2626; }
+
+        .status-text {
+            font-size: 14px;
+            color: #8b9cb8;
+            margin-left: auto;
+        }
         
         .stats-grid {
             display: grid;
@@ -101,9 +105,7 @@
             margin-bottom: 40px;
         }
         
-        .funnel-step {
-            margin-bottom: 24px;
-        }
+        .funnel-step { margin-bottom: 24px; }
         
         .funnel-label {
             display: flex;
@@ -127,6 +129,7 @@
             padding-left: 16px;
             font-weight: 600;
             transition: width 0.3s;
+            min-width: 50px;
         }
         
         .leads-table {
@@ -142,26 +145,18 @@
             font-weight: 600;
         }
         
-        .table-body {
-            padding: 20px;
-        }
+        .table-body { padding: 20px; }
         
         .lead-row {
             display: grid;
-            grid-template-columns: 2fr 2fr 2fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr;
             gap: 16px;
             padding: 16px;
             border-bottom: 1px solid #1e3a5f;
             align-items: center;
         }
-        
-        .lead-row:last-child {
-            border-bottom: none;
-        }
-        
-        .lead-name {
-            font-weight: 600;
-        }
+        .lead-row:last-child { border-bottom: none; }
+        .lead-name { font-weight: 600; }
         
         .lead-score {
             display: inline-block;
@@ -181,7 +176,6 @@
             color: #8b9cb8;
         }
 
-        /* Confirm Modal */
         .confirm-overlay {
             display: none;
             position: fixed;
@@ -206,6 +200,19 @@
         .confirm-box button { padding: 12px 24px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; }
         .btn-cancel { background: #6b7280; color: white; }
         .btn-confirm-delete { background: #ef4444; color: white; }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #1e3a5f;
+            border-top-color: #c9a35b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -227,9 +234,9 @@
             <div class="action-buttons">
                 <button class="refresh-btn" onclick="loadAnalytics()">🔄 Aktualisieren</button>
                 <button class="reset-btn" onclick="showResetConfirm()">🗑 Alle Daten zurücksetzen</button>
+                <span class="status-text" id="status-text">Wird geladen...</span>
             </div>
             
-            <!-- Key Metrics -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">Landingpage Views</div>
@@ -253,7 +260,6 @@
                 </div>
             </div>
             
-            <!-- Funnel Visualization -->
             <div class="funnel-visual">
                 <h2 style="margin-bottom: 24px; font-size: 20px;">Conversion Funnel</h2>
                 
@@ -298,32 +304,32 @@
                 </div>
             </div>
             
-            <!-- Leads Table -->
             <div class="leads-table">
                 <div class="table-header">Letzte Leads</div>
                 <div class="table-body" id="leads-table">
-                    <div class="no-data">Noch keine Leads vorhanden</div>
+                    <div class="no-data"><span class="loading-spinner"></span> Lade Daten vom Analytics-Bot...</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Reset Confirm Modal -->
     <div class="confirm-overlay" id="resetModal">
         <div class="confirm-box">
             <h3>⚠️ Daten zurücksetzen?</h3>
-            <p>Alle Analytics-Daten (Views, Quiz-Starts, Leads) werden unwiderruflich gelöscht.</p>
+            <p>Es wird ein Reset-Marker gesetzt. Alle bisherigen Events werden ab dann nicht mehr gezählt.</p>
             <div class="btn-group">
                 <button class="btn-cancel" onclick="hideResetConfirm()">Abbrechen</button>
-                <button class="btn-confirm-delete" onclick="resetAnalytics()">Ja, alles löschen</button>
+                <button class="btn-confirm-delete" onclick="resetAnalytics()">Ja, ab jetzt neu zählen</button>
             </div>
         </div>
     </div>
     
     <script>
-        // ==================== AUTH ====================
         const TOKEN = 'immobilien_2026_samu';
-        
+        const ANALYTICS_BOT_TOKEN = '8695271268:AAF7NLe0TTRqTfd3yGOpmB0f9JwY2EAkuHI';
+        const ANALYTICS_CHAT_ID = '830554328';
+
+        // ==================== AUTH ====================
         function checkAuth() {
             const urlParams = new URLSearchParams(window.location.search);
             let token = urlParams.get('token') || localStorage.getItem('analytics_token');
@@ -360,62 +366,126 @@
             document.getElementById('resetModal').classList.remove('active');
         }
 
-        function resetAnalytics() {
-            localStorage.setItem('funnel_analytics', JSON.stringify({
-                views: 0,
-                quizStarts: 0,
-                quizComplete: 0,
-                leads: 0,
-                leadsList: []
-            }));
+        async function resetAnalytics() {
+            try {
+                await fetch(`https://api.telegram.org/bot${ANALYTICS_BOT_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: ANALYTICS_CHAT_ID,
+                        text: `[EVENT] RESET | ${new Date().toISOString()}`
+                    })
+                });
+            } catch (err) {
+                console.error("Reset error:", err);
+            }
             hideResetConfirm();
-            loadAnalytics();
+            setTimeout(loadAnalytics, 1000);
         }
-        
-        // ==================== ANALYTICS ====================
-        function loadAnalytics() {
-            const analytics = JSON.parse(localStorage.getItem('funnel_analytics') || '{"views":0,"quizStarts":0,"quizComplete":0,"leads":0,"leadsList":[]}');
-            
-            // Update stats
-            document.getElementById('stat-views').textContent = analytics.views || 0;
-            document.getElementById('stat-quiz-starts').textContent = analytics.quizStarts || 0;
-            document.getElementById('stat-quiz-complete').textContent = analytics.quizComplete || 0;
-            document.getElementById('stat-leads').textContent = analytics.leads || 0;
-            
-            // Calculate conversions
-            const convQuiz = analytics.views > 0 ? Math.round((analytics.quizStarts / analytics.views) * 100) : 0;
-            const convComplete = analytics.quizStarts > 0 ? Math.round((analytics.quizComplete / analytics.quizStarts) * 100) : 0;
-            const convLead = analytics.quizComplete > 0 ? Math.round((analytics.leads / analytics.quizComplete) * 100) : 0;
-            
+
+        // ==================== LOAD FROM TELEGRAM ====================
+        async function loadAnalytics() {
+            document.getElementById('status-text').innerHTML = '<span class="loading-spinner"></span> Lade...';
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${ANALYTICS_BOT_TOKEN}/getUpdates?limit=100&allowed_updates=["message"]`);
+                const data = await res.json();
+
+                if (!data.ok) {
+                    document.getElementById('status-text').textContent = '❌ Fehler beim Laden';
+                    return;
+                }
+
+                const messages = data.result
+                    .filter(u => u.message && u.message.text && u.message.text.startsWith('[EVENT]'))
+                    .map(u => u.message.text);
+
+                // Find last RESET marker
+                let resetIndex = -1;
+                for (let i = messages.length - 1; i >= 0; i--) {
+                    if (messages[i].includes('RESET')) {
+                        resetIndex = i;
+                        break;
+                    }
+                }
+
+                // Only count events after the last reset
+                const relevantMessages = resetIndex >= 0 ? messages.slice(resetIndex + 1) : messages;
+
+                let views = 0, quizStarts = 0, quizComplete = 0, leads = 0;
+                const leadsList = [];
+
+                relevantMessages.forEach(msg => {
+                    if (msg.includes('LEAD')) {
+                        leads++;
+                        const parts = msg.split(' | ');
+                        if (parts.length >= 3) {
+                            const name = parts[1] || '-';
+                            const scoreStr = parts[2] || '0';
+                            const score = parseInt(scoreStr) || 0;
+                            const timestamp = parts[3] || '';
+                            leadsList.push({ name, score, timestamp });
+                        }
+                    } else if (msg.includes('QUIZ_COMPLETE')) {
+                        quizComplete++;
+                    } else if (msg.includes('QUIZ_START')) {
+                        quizStarts++;
+                    } else if (msg.includes('VIEW')) {
+                        views++;
+                    }
+                });
+
+                updateDisplay(views, quizStarts, quizComplete, leads, leadsList);
+                
+                const now = new Date().toLocaleTimeString('de-CH');
+                document.getElementById('status-text').textContent = `✅ Aktualisiert um ${now} · ${relevantMessages.length} Events`;
+
+            } catch (err) {
+                console.error("Load error:", err);
+                document.getElementById('status-text').textContent = '❌ Verbindungsfehler';
+            }
+        }
+
+        function updateDisplay(views, quizStarts, quizComplete, leads, leadsList) {
+            document.getElementById('stat-views').textContent = views;
+            document.getElementById('stat-quiz-starts').textContent = quizStarts;
+            document.getElementById('stat-quiz-complete').textContent = quizComplete;
+            document.getElementById('stat-leads').textContent = leads;
+
+            const convQuiz = views > 0 ? Math.round((quizStarts / views) * 100) : 0;
+            const convComplete = quizStarts > 0 ? Math.round((quizComplete / quizStarts) * 100) : 0;
+            const convLead = quizComplete > 0 ? Math.round((leads / quizComplete) * 100) : 0;
+
             document.getElementById('conv-quiz').textContent = convQuiz;
             document.getElementById('conv-complete').textContent = convComplete;
             document.getElementById('conv-lead').textContent = convLead;
-            
-            // Update funnel bars
-            document.getElementById('funnel-views').textContent = analytics.views || 0;
-            document.getElementById('funnel-quiz-starts').textContent = analytics.quizStarts || 0;
-            document.getElementById('funnel-quiz-complete').textContent = analytics.quizComplete || 0;
-            document.getElementById('funnel-leads').textContent = analytics.leads || 0;
-            
-            const baseViews = analytics.views || 1;
-            document.getElementById('bar-quiz-starts').style.width = ((analytics.quizStarts / baseViews) * 100) + '%';
-            document.getElementById('bar-quiz-starts').textContent = convQuiz + '%';
-            document.getElementById('bar-quiz-complete').style.width = ((analytics.quizComplete / baseViews) * 100) + '%';
-            document.getElementById('bar-quiz-complete').textContent = Math.round((analytics.quizComplete / baseViews) * 100) + '%';
-            document.getElementById('bar-leads').style.width = ((analytics.leads / baseViews) * 100) + '%';
-            document.getElementById('bar-leads').textContent = Math.round((analytics.leads / baseViews) * 100) + '%';
-            
-            // Update leads table
-            if (analytics.leadsList && analytics.leadsList.length > 0) {
-                const tableHtml = analytics.leadsList.reverse().slice(0, 20).map(lead => {
+
+            document.getElementById('funnel-views').textContent = views;
+            document.getElementById('funnel-quiz-starts').textContent = quizStarts;
+            document.getElementById('funnel-quiz-complete').textContent = quizComplete;
+            document.getElementById('funnel-leads').textContent = leads;
+
+            const base = views || 1;
+            const pctQuiz = Math.round((quizStarts / base) * 100);
+            const pctComplete = Math.round((quizComplete / base) * 100);
+            const pctLeads = Math.round((leads / base) * 100);
+
+            document.getElementById('bar-quiz-starts').style.width = Math.max(pctQuiz, 2) + '%';
+            document.getElementById('bar-quiz-starts').textContent = pctQuiz + '%';
+            document.getElementById('bar-quiz-complete').style.width = Math.max(pctComplete, 2) + '%';
+            document.getElementById('bar-quiz-complete').textContent = pctComplete + '%';
+            document.getElementById('bar-leads').style.width = Math.max(pctLeads, 2) + '%';
+            document.getElementById('bar-leads').textContent = pctLeads + '%';
+
+            if (leadsList.length > 0) {
+                const tableHtml = leadsList.reverse().slice(0, 20).map(lead => {
                     const scoreClass = lead.score >= 12 ? 'score-high' : lead.score >= 8 ? 'score-medium' : 'score-low';
+                    const dateStr = lead.timestamp ? new Date(lead.timestamp).toLocaleDateString('de-CH') : '-';
                     return `
                         <div class="lead-row">
-                            <div class="lead-name">${lead.firstName}</div>
-                            <div>${lead.email}</div>
-                            <div>${lead.phone}</div>
-                            <div><span class="lead-score ${scoreClass}">${lead.score}</span></div>
-                            <div style="font-size: 14px; color: #8b9cb8;">${new Date(lead.timestamp).toLocaleDateString('de-CH')}</div>
+                            <div class="lead-name">${lead.name}</div>
+                            <div><span class="lead-score ${scoreClass}">${lead.score} Pkt</span></div>
+                            <div style="font-size: 14px; color: #8b9cb8;">${dateStr}</div>
                         </div>
                     `;
                 }).join('');
@@ -424,8 +494,7 @@
                 document.getElementById('leads-table').innerHTML = '<div class="no-data">Noch keine Leads vorhanden</div>';
             }
         }
-        
-        // Check auth on page load
+
         checkAuth();
     </script>
 </body>
