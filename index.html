@@ -691,8 +691,86 @@ async function sendAnalyticsEvent(eventType, extra = '') {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ chat_id: ANALYTICS_CHAT_ID, text })
         });
+        
+        // Also update the pinned counter message
+        await updateCounterMessage(eventType, extra);
     } catch (err) {
         console.error("Analytics error:", err);
+    }
+}
+
+async function updateCounterMessage(eventType, extra) {
+    try {
+        // Read current counter from pinned message description
+        const storageKey = 'ivora_analytics_counters';
+        let counters = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        
+        // Also try to get from the bot's pinned message
+        // For cross-device sync, we use the bot's chat description
+        const chatRes = await fetch(`https://api.telegram.org/bot${ANALYTICS_BOT_TOKEN}/getChat?chat_id=${ANALYTICS_CHAT_ID}`);
+        const chatData = await chatRes.json();
+        
+        if (chatData.ok && chatData.result.pinned_message && chatData.result.pinned_message.text) {
+            try {
+                const pinnedText = chatData.result.pinned_message.text;
+                if (pinnedText.startsWith('{')) {
+                    counters = JSON.parse(pinnedText);
+                }
+            } catch(e) {}
+        }
+
+        // Initialize if empty
+        if (!counters.views) counters = { views: 0, quizStarts: 0, quizComplete: 0, leads: 0, leadsList: [], lastUpdate: '' };
+
+        // Update counter
+        switch(eventType) {
+            case 'VIEW': counters.views++; break;
+            case 'QUIZ_START': counters.quizStarts++; break;
+            case 'QUIZ_COMPLETE': counters.quizComplete++; break;
+            case 'LEAD': 
+                counters.leads++; 
+                counters.leadsList.push({ info: extra, time: new Date().toISOString() });
+                if (counters.leadsList.length > 20) counters.leadsList = counters.leadsList.slice(-20);
+                break;
+        }
+        counters.lastUpdate = new Date().toISOString();
+
+        const counterText = JSON.stringify(counters);
+        localStorage.setItem(storageKey, counterText);
+
+        // Try to edit pinned message, or send new one and pin it
+        if (chatData.ok && chatData.result.pinned_message) {
+            await fetch(`https://api.telegram.org/bot${ANALYTICS_BOT_TOKEN}/editMessageText`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: ANALYTICS_CHAT_ID,
+                    message_id: chatData.result.pinned_message.message_id,
+                    text: counterText
+                })
+            });
+        } else {
+            // Send new message and pin it
+            const msgRes = await fetch(`https://api.telegram.org/bot${ANALYTICS_BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: ANALYTICS_CHAT_ID, text: counterText })
+            });
+            const msgData = await msgRes.json();
+            if (msgData.ok) {
+                await fetch(`https://api.telegram.org/bot${ANALYTICS_BOT_TOKEN}/pinChatMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        chat_id: ANALYTICS_CHAT_ID, 
+                        message_id: msgData.result.message_id,
+                        disable_notification: true
+                    })
+                });
+            }
+        }
+    } catch (err) {
+        console.error("Counter update error:", err);
     }
 }
 
