@@ -346,8 +346,6 @@ label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--navy-
 const TELEGRAM_BOT_TOKEN = '8097168362:AAG4aeWZF_iL_jg0D0chIt49HuQc20QrINc';
 const TELEGRAM_CHAT_ID = '830554328';
 
-let analytics = JSON.parse(localStorage.getItem('funnel_analytics') || '{"views":0,"quizStarts":0,"quizComplete":0,"leads":0,"leadsList":[]}');
-
 const quizQuestions = [
     {
         id: 'q1_goal',
@@ -682,18 +680,29 @@ function closeQuiz() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function saveAnalytics() {
-    localStorage.setItem("funnel_analytics", JSON.stringify(analytics));
+const ANALYTICS_BOT_TOKEN = '8695271268:AAF7NLe0TTRqTfd3yGOpmB0f9JwY2EAkuHI';
+const ANALYTICS_CHAT_ID = '830554328';
+
+async function sendAnalyticsEvent(eventType, extra = '') {
+    const text = `[EVENT] ${eventType}${extra ? ' | ' + extra : ''} | ${new Date().toISOString()}`;
+    try {
+        await fetch(`https://api.telegram.org/bot${ANALYTICS_BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: ANALYTICS_CHAT_ID, text })
+        });
+    } catch (err) {
+        console.error("Analytics error:", err);
+    }
 }
 
 function trackAnalyticsEvent(event, data = {}) {
     switch (event) {
-        case "view": analytics.views++; break;
-        case "quiz_start": analytics.quizStarts++; break;
-        case "quiz_complete": analytics.quizComplete++; break;
-        case "lead": analytics.leads++; analytics.leadsList.push(data); break;
+        case "view": sendAnalyticsEvent("VIEW"); break;
+        case "quiz_start": sendAnalyticsEvent("QUIZ_START"); break;
+        case "quiz_complete": sendAnalyticsEvent("QUIZ_COMPLETE"); break;
+        case "lead": sendAnalyticsEvent("LEAD", `${data.firstName} | ${data.score}pts`); break;
     }
-    saveAnalytics();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
